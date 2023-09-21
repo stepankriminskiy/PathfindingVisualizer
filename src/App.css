@@ -30,6 +30,11 @@ main {
   background-color: green;
 }
 
+.node.visited {
+  background-color: lightblue;
+}
+
+
 .node.end {
   background-color: red;
 }

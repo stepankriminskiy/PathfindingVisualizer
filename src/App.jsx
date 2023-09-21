@@ -4,6 +4,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useDrag, useDrop } from 'react-dnd';
 import { Node, Obstacle, Grid } from './DataStructures';
+import { BFS } from './bfsAlgorithm';
 
 const TOTAL_ROWS = 15;  // Adjust as needed
 const TOTAL_COLS = 30;
@@ -25,6 +26,8 @@ function DraggableNode({ node, onDragEnd }) {
   );
 }
 
+
+
 // Droppable Node
 function DroppableNode({ node, onDrop }) {
   const [, ref] = useDrop({
@@ -36,6 +39,7 @@ function DroppableNode({ node, onDrop }) {
       <div ref={ref} className={`node ${node.type}`}></div>
   );
 }
+
 
 export default function App() {
   const [grid, setGrid] = useState(null);
@@ -66,6 +70,35 @@ export default function App() {
     setGrid(newGrid);
   };
 
+
+  
+  function getStartNode() {
+    for (let row of grid.nodes) {
+      for (let node of row) {
+        if (node.type === 'start') {
+          return node;
+        }
+      }
+    }
+  }
+  
+  const visualizeBFS = (visitedNodesInOrder) => {
+    for (let i = 0; i < visitedNodesInOrder.length; i++) {
+      setTimeout(() => {
+        const node = visitedNodesInOrder[i];
+        node.type = 'visited';
+        const newGrid = [...grid.nodes];
+        setGrid({ nodes: newGrid });
+      }, 50 * i);  // 50ms delay between each node
+    }
+  };
+  const handleVisualizeClick = () => {
+    const startNode = getStartNode();
+    const visitedNodesInOrder = BFS(grid.nodes, startNode);
+  
+    visualizeBFS(visitedNodesInOrder);
+  };
+
   return (
       <DndProvider backend={HTML5Backend}>
         <main>
@@ -87,7 +120,7 @@ export default function App() {
               </div>
             </div>
             <div className="Button">Add or Remove Walls</div>
-            <div className="Button Blue">Visualize!</div>
+            <div className="Button Blue" onClick={handleVisualizeClick}>Visualize!</div>
             <div className="Button">Clear Board</div>
             <div className="Button">
               Control
