@@ -1,7 +1,6 @@
 main {
   text-align: center;
   vertical-align: center;
-  line-height: 100vh
 }
 .row {
   display: flex;
@@ -16,7 +15,7 @@ main {
 }
 
 .node.end {
-    background-color: red;   
+    background-color: red;
 }
 
 .node {
@@ -42,14 +41,130 @@ main {
 .toolbar {
   width: 100%;
   height: 60px;  /* Adjust based on your needs */
-  background-color: #f6f6f6;  /* Any light color */
+  background-color: #333;  /* Any light color */
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;  /* Spacing between toolbar and grid */
   display: flex;
   align-items: center;
-  justify-content: center;  /* Centers any content inside the toolbar */
+  justify-content: space-between;
+  padding: 10px;
+  color: white;
+
 }
 
-.Menu { 
+.Menu {
   display:None;
+}
+
+.Button {
+  background-color: transparent;
+  color: #ffffff;
+  padding: 5px 10px;
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 5px;
+  display: flex; /* Center text vertically and horizontally */
+  align-items: center;
+  justify-content: center;
+  position: relative; /* Added for dropdown */
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.Button.Blue {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.Button.Blue:hover {
+  background-color: #000099;
+}
+
+.Button:hover {
+  background-color: #007bff;
+}
+
+.ControlButtons {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ControlButton {
+  background-color: #ccc;
+  color: #000;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.ControlButton:hover {
+  background-color: grey;
+}
+
+.Slider {
+  width: 100px;
+}
+
+/* Dropdown styles */
+
+.Dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.DropdownButton {
+  background-color: #333;
+  color: white;
+  padding: 5px 10px;
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Initially hide the dropdown content */
+.DropdownContent {
+  display: none;
+  position: absolute;
+  background-color: #333;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  top: 100%; /* Position dropdown below the button */
+  left: 0; /* Align dropdown with the button */
+}
+
+/* Show the dropdown content when the button is hovered */
+.Dropdown:hover .DropdownContent {
+  display: block;
+}
+
+.DropdownItem {
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Highlight the selected item */
+.DropdownItem.Selected {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Show the dropdown content when hovering over the button */
+.DropdownButton:hover .DropdownContent {
+  display: block;
+}
+
+.DropdownItem:hover {
+  background-color: #007bff; /* Highlight on hover */
+}
+
+.Selected {
+  background-color: #007bff; /* Highlight the selected item */
+  color: white;
 }

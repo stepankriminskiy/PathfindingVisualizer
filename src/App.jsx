@@ -8,7 +8,7 @@ import { Node, Obstacle, Grid } from './DataStructures';
 const TOTAL_ROWS = 15;  // Adjust as needed
 const TOTAL_COLS = 30;
 
-function DraggableNode({ node, onDragEnd }) { 
+function DraggableNode({ node, onDragEnd }) {
   const [, ref] = useDrag({
     type: 'NODE',
     item: { id: node.type, row: node.row, col: node.col },
@@ -21,7 +21,7 @@ function DraggableNode({ node, onDragEnd }) {
   });
 
   return (
-    <div ref={ref} className={`node ${node.type}`}></div>
+      <div ref={ref} className={`node ${node.type}`}></div>
   );
 }
 
@@ -33,12 +33,18 @@ function DroppableNode({ node, onDrop }) {
   });
 
   return (
-    <div ref={ref} className={`node ${node.type}`}></div>
+      <div ref={ref} className={`node ${node.type}`}></div>
   );
 }
 
 export default function App() {
   const [grid, setGrid] = useState(null);
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
+  const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm"];
+
+  const handleAlgorithmChange = (algorithm) => {
+    setSelectedAlgorithm(algorithm);
+  };
 
   useEffect(() => {
     const initialGrid = new Grid(TOTAL_ROWS, TOTAL_COLS);
@@ -61,27 +67,54 @@ export default function App() {
   };
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <main>
-        <div className="toolbar">
-        </div>
-        <div className="grid-container">
-          {grid && grid.nodes.map((row, rowIndex) => (
-            <div key={rowIndex} className="row">
-              {row.map((node, nodeIndex) => {
-                if (node.type === 'start' || node.type === 'end') {
-                  return (
-                    <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
-                  );
-                }
-                return (
-                  <DroppableNode key={nodeIndex} node={node} />
-                );
-              })}
+      <DndProvider backend={HTML5Backend}>
+        <main>
+          <header className="toolbar">
+            <div className="Dropdown">
+              <div className="DropdownButton">
+                Algorithms
+                <div className="DropdownContent">
+                  {algorithms.map((algorithm, index) => (
+                      <div
+                          key={index}
+                          className={`DropdownItem ${selectedAlgorithm === algorithm ? 'Selected' : ''}`}
+                          onClick={() => handleAlgorithmChange(algorithm)}
+                      >
+                        {algorithm}
+                      </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
-      </main>
-    </DndProvider>
+            <div className="Button">Add or Remove Walls</div>
+            <div className="Button Blue">Visualize!</div>
+            <div className="Button">Clear Board</div>
+            <div className="Button">
+              Control
+              <div className="ControlButtons">
+                <button className="ControlButton">Pause</button>
+                <button className="ControlButton">Continue</button>
+                <input type="range" className="Slider" />
+              </div>
+            </div>
+          </header>
+          <div className="grid-container">
+            {grid && grid.nodes.map((row, rowIndex) => (
+                <div key={rowIndex} className="row">
+                  {row.map((node, nodeIndex) => {
+                    if (node.type === 'start' || node.type === 'end') {
+                      return (
+                          <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
+                      );
+                    }
+                    return (
+                        <DroppableNode key={nodeIndex} node={node} />
+                    );
+                  })}
+                </div>
+            ))}
+          </div>
+        </main>
+      </DndProvider>
   );
 }
