@@ -10,13 +10,6 @@ main {
   flex-direction: column;  /* Stack rows vertically */
   align-items: center;     /* Center the rows horizontally */
 }
-.node.start {
-    background-color: blue;
-}
-
-.node.end {
-    background-color: red;
-}
 
 .node {
   width: 20px;
@@ -28,6 +21,14 @@ main {
 
 .node.start {
   background-color: green;
+}
+
+.node.visited {
+  background-color: lightblue;
+}
+
+.node.path {
+  background-color: blue;
 }
 
 .node.end {

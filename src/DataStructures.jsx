@@ -3,6 +3,8 @@ export class Node {
     this.row = row;
     this.col = col;
     this.type = '';
+    this.neighbors = []; // Neighbors of the node
+
     // Default type is an empty string
     // Other properties like isStart, isEnd, isVisited, etc.
   }
@@ -59,8 +61,30 @@ export class Grid {
         this.nodes[i][j] = new Node(i, j);
       }
     }
+    // After initializing all nodes, set their neighbors
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        this.setNeighbors(this.nodes[i][j]);
+      }
+    }
+      
+
+
+    
     this.nodes[0][0].setAsStart(); // Top-left corner for start
     this.nodes[rows - 1][columns - 1].setAsEnd(); // Bottom-right corner for end
+  }
+  setNeighbors(node) {
+    const { row, col } = node;
+
+    // Above
+    if (row > 0) node.neighbors.push(this.nodes[row - 1][col]);
+    // Below
+    if (row < this.rows - 1) node.neighbors.push(this.nodes[row + 1][col]);
+    // Left
+    if (col > 0) node.neighbors.push(this.nodes[row][col - 1]);
+    // Right
+    if (col < this.columns - 1) node.neighbors.push(this.nodes[row][col + 1]);
   }
 
   // Clear the entire grid
