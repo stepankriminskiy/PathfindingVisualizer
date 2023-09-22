@@ -4,7 +4,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useDrag, useDrop } from 'react-dnd';
 import { Node, Obstacle, Grid } from './DataStructures';
-import { BFS } from './bfsAlgorithm';
+import { Algorithm } from './Algorithms';
 
 const TOTAL_ROWS = 15;  // Adjust as needed
 const TOTAL_COLS = 30;
@@ -69,34 +69,30 @@ export default function App() {
 
     setGrid(newGrid);
   };
-
-
   
-  function getStartNode() {
-    for (let row of grid.nodes) {
-      for (let node of row) {
-        if (node.type === 'start') {
-          return node;
+  const visualizeAlgorithm = (visited, path, ms) => {
+    visualizeTimeout(visited, 0, ms, "visited");
+    visualizeTimeout(path, visited.length * ms, ms, "path");
+  };
+
+  const visualizeTimeout = (set, delay, ms, type) => {
+    for (let i = 0; i < set.length; i++) {
+      setTimeout(() => {
+        const node = set[i];
+        if(node.type !== "start" && node.type !== "end") {
+          node.type = type;
         }
-      }
+        const newGrid = [...grid.nodes];
+        setGrid({ nodes: newGrid });
+      }, 
+      ms * i + delay);
     }
   }
   
-  const visualizeBFS = (visitedNodesInOrder) => {
-    for (let i = 0; i < visitedNodesInOrder.length; i++) {
-      setTimeout(() => {
-        const node = visitedNodesInOrder[i];
-        node.type = 'visited';
-        const newGrid = [...grid.nodes];
-        setGrid({ nodes: newGrid });
-      }, 50 * i);  // 50ms delay between each node
-    }
-  };
   const handleVisualizeClick = () => {
-    const startNode = getStartNode();
-    const visitedNodesInOrder = BFS(grid.nodes, startNode);
-  
-    visualizeBFS(visitedNodesInOrder);
+    const alg = new Algorithm(grid);
+    alg.BFS();
+    visualizeAlgorithm(alg.visitedInOrder, alg.path, 50);
   };
 
   return (
@@ -120,7 +116,12 @@ export default function App() {
               </div>
             </div>
             <div className="Button">Add or Remove Walls</div>
-            <div className="Button Blue" onClick={handleVisualizeClick}>Visualize!</div>
+            <div 
+              className="Button Blue" 
+              onClick={handleVisualizeClick}
+            >
+              Visualize!
+            </div>
             <div className="Button">Clear Board</div>
             <div className="Button">
               Control
