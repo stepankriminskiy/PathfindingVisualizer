@@ -46,6 +46,11 @@ export default function App() {
     setSelectedAlgorithm(algorithm);
   };
 
+  const handleClearClick = () => {
+    const newGrid = new Grid(TOTAL_ROWS, TOTAL_COLS);
+    setGrid(newGrid);
+  };
+
   useEffect(() => {
     const initialGrid = new Grid(TOTAL_ROWS, TOTAL_COLS);
     setGrid(initialGrid);
@@ -88,7 +93,7 @@ export default function App() {
             </div>
             <div className="Button">Add or Remove Walls</div>
             <div className="Button Blue">Visualize!</div>
-            <div className="Button">Clear Board</div>
+            <div className="Button" onClick={handleClearClick}>Clear Board</div>
             <div className="Button">
               Control
               <div className="ControlButtons">
