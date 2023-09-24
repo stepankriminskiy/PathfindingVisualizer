@@ -67,8 +67,6 @@ export default function App() {
     setGrid(grid);
 
     paused = true;
-
-    console.log(alg, grid);
   };
 
   useEffect(() => {
@@ -94,7 +92,6 @@ export default function App() {
   const handleVisualizeClick = () => {
     // fixes a weird initialization issue with grid not having any nodes on start
     alg = (alg == null)? new Algorithm(grid, algorithms) : alg;
-    console.log(alg);
 
     clearGridKeepStartAndEnd(grid);
     alg.run(selectedAlgorithm);
