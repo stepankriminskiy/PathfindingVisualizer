@@ -8,7 +8,9 @@ import { Algorithm } from './Algorithms';
 
 const TOTAL_ROWS = 15;  // Adjust as needed
 const TOTAL_COLS = 30;
-let paused = false;
+
+// visualization controls
+let paused = true;
 let alg = null;
 
 function DraggableNode({ node, onDragEnd }) {
@@ -82,10 +84,14 @@ export default function App() {
   const handleVisualizeClick = () => {
     // fixes a weird initialization issue with grid not having any nodes on start
     alg = (alg == null)? new Algorithm(grid, algorithms) : alg;
+
     clearGridKeepStartAndEnd(grid);
     alg.run(selectedAlgorithm);
 
-    visualize(20);
+    if(paused) {
+      paused = false;
+      visualize(20);
+    }
   };
 
   const visualize = (ms) => {
@@ -95,8 +101,6 @@ export default function App() {
           visualize(ms);
         },
         ms);
-    } else {
-      paused = false;
     }
   };
 
@@ -111,11 +115,14 @@ export default function App() {
   };
 
   const handlePauseButtonClick = () => {
-    paused = true;
+      paused = true;
   };
 
   const handleContinueButtonClick = () => {
-    visualize(20);
+    if(paused) {
+      paused = false;
+      visualize(20);
+    }
   };
 
   return (
