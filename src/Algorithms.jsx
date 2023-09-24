@@ -1,18 +1,26 @@
 export class Algorithm {
-    constructor(grid) {
+    constructor(grid, algorithms) {
         this.grid = grid;
         
         this.startNode = this.getNodes("start")[0];
         this.endNode = this.getNodes("end")[0];
 
-        // allows for multi-start, but not sure how that would work ;-;
         this.queue = this.getNodes("start");
-        
         this.visited = new Set();
-        this.visitedInOrder = [];
-        
         this.parents = new Map();
-        this.path = [];
+        
+        this.visualQueue = [];
+
+        this.algorithms = algorithms;
+    }
+
+    clearQueue() {
+        //allows for multistart by taking all start nodes, not sure how that would look
+        this.queue = this.getNodes("start");
+        this.visited = new Set();
+        this.parents = new Map();
+        
+        this.visualQueue = [];
     }
 
     getNodes(type) {
@@ -33,9 +41,30 @@ export class Algorithm {
 
     buildPath(start) {
         let currentNode = start;
+        let path = []
         while(currentNode !== undefined) {
-            this.path.unshift(currentNode);
+            path.unshift(currentNode);
             currentNode = this.parents.get(currentNode);
+        }
+        for(const node of path) {
+            this.visualQueue.push(new VisualNode(node, "path"));
+        }
+    }
+
+    run(algorithm) {
+        this.clearQueue();
+        const alg = this.algorithms.indexOf(algorithm);
+
+        switch(alg) {
+            case 0:
+                this.BFS();
+                break;
+            case 1:
+            case 2:
+                throw new Error("Algorithm '" + algorithm + "' not implimented yet.");
+                break;
+            default:
+                this.BFS();
         }
     }
 
@@ -45,7 +74,7 @@ export class Algorithm {
             const currentNode = this.queue.shift();
             if (currentNode.type === "obstacle") continue;
 
-            this.visitedInOrder.push(currentNode);
+            this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
         
             if (currentNode.type === 'end') {
@@ -62,5 +91,12 @@ export class Algorithm {
                 }
             }
         };
+    }
+}
+
+class VisualNode {
+    constructor(node, type) {
+        this.node = node;
+        this.type = type;
     }
 }

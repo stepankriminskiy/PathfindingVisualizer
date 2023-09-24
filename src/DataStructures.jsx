@@ -25,6 +25,9 @@ export class Node {
   }
 
   // Other methods for node operations, e.g., clearType, etc.
+  clear() {
+    this.updateType("");
+  }
 }
 
 export class Obstacle {
@@ -67,13 +70,11 @@ export class Grid {
         this.setNeighbors(this.nodes[i][j]);
       }
     }
-      
-
-
     
     this.nodes[0][0].setAsStart(); // Top-left corner for start
     this.nodes[rows - 1][columns - 1].setAsEnd(); // Bottom-right corner for end
   }
+  
   setNeighbors(node) {
     const { row, col } = node;
 

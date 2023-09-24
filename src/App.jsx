@@ -9,6 +9,10 @@ import { Algorithm } from './Algorithms';
 const TOTAL_ROWS = 15;  // Adjust as needed
 const TOTAL_COLS = 30;
 
+// visualization controls
+let paused = true;
+let alg = null;
+
 function DraggableNode({ node, onDragEnd }) {
   const [, ref] = useDrag({
     type: 'NODE',
@@ -26,8 +30,6 @@ function DraggableNode({ node, onDragEnd }) {
   );
 }
 
-
-
 // Droppable Node
 function DroppableNode({ node, onDrop }) {
   const [, ref] = useDrop({
@@ -40,6 +42,15 @@ function DroppableNode({ node, onDrop }) {
   );
 }
 
+function clearGridKeepStartAndEnd(grid) {
+  for(let row of grid.nodes) {
+    for(let node of row) {
+      if(node.type !== "start" && node.type !== "end") {
+        node.clear();
+      }
+    }
+  }
+}
 
 export default function App() {
   const [grid, setGrid] = useState(null);
@@ -75,29 +86,48 @@ export default function App() {
     setGrid(newGrid);
   };
   
-  const visualizeAlgorithm = (visited, path, ms) => {
-    visualizeTimeout(visited, 0, ms, "visited");
-    visualizeTimeout(path, visited.length * ms, ms, "path");
+  const handleVisualizeClick = () => {
+    // fixes a weird initialization issue with grid not having any nodes on start
+    alg = (alg == null)? new Algorithm(grid, algorithms) : alg;
+
+    clearGridKeepStartAndEnd(grid);
+    alg.run(selectedAlgorithm);
+
+    if(paused) {
+      paused = false;
+      visualize(20);
+    }
   };
 
-  const visualizeTimeout = (set, delay, ms, type) => {
-    for (let i = 0; i < set.length; i++) {
-      setTimeout(() => {
-        const node = set[i];
-        if(node.type !== "start" && node.type !== "end") {
-          node.type = type;
-        }
-        const newGrid = [...grid.nodes];
-        setGrid({ nodes: newGrid });
-      }, 
-      ms * i + delay);
+  const visualize = (ms) => {
+    if(!paused) {
+        step();
+        setTimeout(function() {
+          visualize(ms);
+        },
+        ms);
     }
-  }
-  
-  const handleVisualizeClick = () => {
-    const alg = new Algorithm(grid);
-    alg.BFS();
-    visualizeAlgorithm(alg.visitedInOrder, alg.path, 50);
+  };
+
+  const step = () => {
+    if(alg.visualQueue.length > 0) {
+      const visualNode = alg.visualQueue.shift();
+      if(!(["start", "end"].indexOf(visualNode.node.type) + 1)) {
+        visualNode.node.updateType(visualNode.type);
+      }
+      setGrid({...grid});
+    }
+  };
+
+  const handlePauseButtonClick = () => {
+      paused = true;
+  };
+
+  const handleContinueButtonClick = () => {
+    if(paused) {
+      paused = false;
+      visualize(20);
+    }
   };
 
   return (
@@ -131,9 +161,9 @@ export default function App() {
             <div className="Button">
               Control
               <div className="ControlButtons">
-                <button className="ControlButton">Pause</button>
-                <button className="ControlButton">Continue</button>
-                <input type="range" className="Slider" />
+                <button className="ControlButton" onClick={() => {handlePauseButtonClick();}}>Pause</button>
+                <button className="ControlButton" onClick={() => {handleContinueButtonClick();}}>Continue</button>
+                <input type="range" className="Slider"/>
               </div>
             </div>
           </header>
@@ -156,4 +186,4 @@ export default function App() {
         </main>
       </DndProvider>
   );
-}
+} 
