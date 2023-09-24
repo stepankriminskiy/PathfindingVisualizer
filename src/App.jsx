@@ -53,7 +53,7 @@ function clearGridKeepStartAndEnd(grid) {
 }
 
 export default function App() {
-  const [grid, setGrid] = useState(null);
+  let [grid, setGrid] = useState(null);
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
   const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm"];
 
@@ -62,8 +62,13 @@ export default function App() {
   };
 
   const handleClearClick = () => {
-    const newGrid = new Grid(TOTAL_ROWS, TOTAL_COLS);
-    setGrid(newGrid);
+    grid = new Grid(TOTAL_ROWS, TOTAL_COLS);
+    alg = new Algorithm(grid, algorithms);
+    setGrid(grid);
+
+    paused = true;
+
+    console.log(alg, grid);
   };
 
   useEffect(() => {
@@ -89,6 +94,7 @@ export default function App() {
   const handleVisualizeClick = () => {
     // fixes a weird initialization issue with grid not having any nodes on start
     alg = (alg == null)? new Algorithm(grid, algorithms) : alg;
+    console.log(alg);
 
     clearGridKeepStartAndEnd(grid);
     alg.run(selectedAlgorithm);
