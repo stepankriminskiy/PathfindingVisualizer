@@ -4,6 +4,7 @@ export class Node {
     this.col = col;
     this.type = '';
     this.neighbors = []; // Neighbors of the node
+    this.weight = 1
 
     // Default type is an empty string
     // Other properties like isStart, isEnd, isVisited, etc.
@@ -22,6 +23,16 @@ export class Node {
   // Set this node as the end node
   setAsEnd() {
     this.type = 'end';
+  }
+
+  // Other methods for node operations, e.g., clearType, etc.
+  clear() {
+    this.updateType("");
+  }
+
+  setAsObstacle(weight) {
+    this.type = 'obstacle'
+    this.weight = weight
   }
 
   // Other methods for node operations, e.g., clearType, etc.
@@ -67,13 +78,11 @@ export class Grid {
         this.setNeighbors(this.nodes[i][j]);
       }
     }
-      
-
-
     
     this.nodes[0][0].setAsStart(); // Top-left corner for start
     this.nodes[rows - 1][columns - 1].setAsEnd(); // Bottom-right corner for end
   }
+  
   setNeighbors(node) {
     const { row, col } = node;
 
