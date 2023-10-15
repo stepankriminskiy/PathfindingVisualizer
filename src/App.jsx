@@ -143,6 +143,7 @@ export default function App() {
     }
   };
   const handleStepButtonClick = () => {
+    paused = true;
     step();
   };
 
