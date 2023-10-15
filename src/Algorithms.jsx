@@ -60,6 +60,8 @@ export class Algorithm {
                 this.BFS();
                 break;
             case 1:
+                this.DFS();
+                break;
             case 2:
                 throw new Error("Algorithm '" + algorithm + "' not implimented yet.");
                 break;
@@ -86,6 +88,30 @@ export class Algorithm {
             for (const neighbor of neighbors) {
                 if (!this.visited.has(neighbor)) {
                     this.queue.push(neighbor);
+                    this.visited.add(neighbor);
+                    this.parents.set(neighbor, currentNode);
+                }
+            }
+        };
+    }
+
+    DFS() {
+        while(this.queue.length) {
+            const currentNode = this.queue.shift();
+            if (currentNode.type === "obstacle") continue;
+
+            this.visualQueue.push(new VisualNode(currentNode, "visited"));
+            this.visited.add(currentNode);
+        
+            if (currentNode.type === 'end') {
+                this.buildPath(currentNode);
+                break;
+            }
+        
+            const neighbors = currentNode.neighbors;
+            for (const neighbor of neighbors) {
+                if (!this.visited.has(neighbor)) {
+                    this.queue.unshift(neighbor);
                     this.visited.add(neighbor);
                     this.parents.set(neighbor, currentNode);
                 }
