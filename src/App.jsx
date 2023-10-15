@@ -142,6 +142,9 @@ export default function App() {
       visualize(20);
     }
   };
+  const handleStepButtonClick = () => {
+
+  };
 
   return (
       <DndProvider backend={HTML5Backend}>
@@ -176,6 +179,7 @@ export default function App() {
               <div className="ControlButtons">
                 <button className="ControlButton" onClick={() => {handlePauseButtonClick();}}>Pause</button>
                 <button className="ControlButton" onClick={() => {handleContinueButtonClick();}}>Continue</button>
+                <button className="ControlButton" onClick={() => {handleStepButtonClick();}}>Step</button>
                 <input 
                 type="range" 
                 className="Slider"
