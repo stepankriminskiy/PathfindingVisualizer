@@ -58,6 +58,8 @@ export default function App() {
   const [speed, setSpeed] = useState(100); // for speed control slider
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
   const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A* (not done)"];
+  const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
+  const nodeOptions = ['Add Walls', 'Remove Walls', 'Increase Node Weight', 'Decrease Node Weight'];
 
   const handleSpeedChange = (e) => { // change speed with control slider
     setSpeed(200 - e.target.value);
@@ -72,6 +74,10 @@ export default function App() {
 
   const handleAlgorithmChange = (algorithm) => {
     setSelectedAlgorithm(algorithm);
+  };
+
+  const handleNodeOptionChange = (nodeOption) => {
+    setSelectedNodeOption(nodeOption);
   };
 
   const handleClearClick = () => {
@@ -167,7 +173,23 @@ export default function App() {
                 </div>
               </div>
             </div>
-            <div className="Button">Add or Remove Walls</div>
+            <div className="Dropdown">
+              <div className="DropdownButton">
+                Node Options
+                <div className="DropdownContent">
+                  {nodeOptions.map((nodeOption, index) => (
+                      <div
+                          key={index}
+                          className={`DropdownItem ${selectedNodeOption === nodeOption ? 'Selected' : ''}`}
+                          onClick={() => handleNodeOptionChange(nodeOption)}
+                      >
+                        {nodeOption}
+                      </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {/*<div className="Button">Add or Remove Walls</div>*/}
             <div 
               className="Button Blue" 
               onClick={handleVisualizeClick}
