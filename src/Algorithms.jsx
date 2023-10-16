@@ -64,6 +64,7 @@ export class Algorithm {
               break;
           case 1:
               this.DFS();
+              break;
           case 2:
               this.DijkstrasAlgorithm();
               break;
