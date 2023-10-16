@@ -32,6 +32,9 @@ export class Algorithm {
                 }
             }
         }
+
+        console.log(output);
+
         return output;
     }
 
@@ -63,11 +66,24 @@ export class Algorithm {
                 this.DFS();
                 break;
             case 2:
+            case 3:
+                this.Astar();
+                break;
+            case 4:
                 throw new Error("Algorithm '" + algorithm + "' not implimented yet.");
                 break;
             default:
                 this.BFS();
         }
+    }
+
+    distance(node1, node2) {
+        const distance = Math.sqrt(
+          Math.pow(node1.row - node2.row, 2)
+          +
+          Math.pow(node1.col - node2.col, 2)
+        );
+        return distance;
     }
 
     // algs added here
@@ -92,7 +108,7 @@ export class Algorithm {
                     this.parents.set(neighbor, currentNode);
                 }
             }
-        };
+        }
     }
 
     DFS() {
@@ -116,7 +132,48 @@ export class Algorithm {
                     this.parents.set(neighbor, currentNode);
                 }
             }
-        };
+        }
+    }
+
+    Astar() {
+        for(let i = 0; i < this.queue.length; i++) {
+            const node = this.queue[i];
+            this.queue[i] = [node, this.distance(node, this.endNode)];
+        }
+
+        while(this.queue.length) {
+            const currentTuple = this.queue.shift();
+            const currentNode = currentTuple[0]
+            if (currentNode.type === "obstacle") continue;
+
+            this.visualQueue.push(new VisualNode(currentNode, "visited"));
+            this.visited.add(currentNode);
+        
+            if (currentNode.type === 'end') {
+                this.buildPath(currentNode);
+                break;
+            }
+        
+            const neighbors = currentNode.neighbors;
+            for (const neighbor of neighbors) {
+                if (!this.visited.has(neighbor)) {
+                    this.queue.push([neighbor, this.distance(neighbor, this.endNode)]);
+
+                    // console.log("================BEFORE===============: ");
+                    // for(const a of this.queue) {console.log(a)}
+
+                    this.queue.sort((a, b) => {
+                        return a[1] - b[1];
+                    });
+
+                    // console.log("================AFTER===============: ");
+                    // for(const a of this.queue) {console.log(a)}
+
+                    this.visited.add(neighbor);
+                    this.parents.set(neighbor, currentNode);
+                }
+            }
+        }
     }
 }
 
