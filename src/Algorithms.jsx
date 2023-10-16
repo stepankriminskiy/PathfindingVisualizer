@@ -99,7 +99,7 @@ export class Algorithm {
 
     DFS() {
       while(this.queue.length) {
-          const currentNode = this.queue.pop();
+          const currentNode = this.queue.shift();
           if (currentNode.type === "obstacle") continue;
 
           this.visualQueue.push(new VisualNode(currentNode, "visited"));
@@ -113,13 +113,13 @@ export class Algorithm {
           const neighbors = currentNode.neighbors;
           for (const neighbor of neighbors) {
               if (!this.visited.has(neighbor)) {
-                  this.queue.push(neighbor);
+                  this.queue.unshift(neighbor);
                   this.visited.add(neighbor);
                   this.parents.set(neighbor, currentNode);
               }
           }
       };
-    }
+  }
 
     DijkstrasAlgorithm() {
         // Initialize the distance from the source node to itself as 0.
