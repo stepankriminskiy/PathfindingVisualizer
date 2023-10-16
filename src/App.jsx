@@ -57,7 +57,7 @@ export default function App() {
   const timeoutRef = useRef(null); // for time outs
   const [speed, setSpeed] = useState(100); // for speed control slider
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
-  const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm"];
+  const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A* (not done)"];
 
   const handleSpeedChange = (e) => { // change speed with control slider
     setSpeed(200 - e.target.value);
@@ -104,7 +104,7 @@ export default function App() {
   
   const handleVisualizeClick = () => {
     // fixes a weird initialization issue with grid not having any nodes on start
-    alg = (alg == null)? new Algorithm(grid, algorithms) : alg;
+    alg = new Algorithm(grid, algorithms);
 
     clearGridKeepStartAndEnd(grid);
     alg.run(selectedAlgorithm);
