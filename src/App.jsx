@@ -1,5 +1,5 @@
 import './App.css'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useDrag, useDrop } from 'react-dnd';
@@ -8,6 +8,10 @@ import { Algorithm } from './Algorithms';
 
 const TOTAL_ROWS = 15;  // Adjust as needed
 const TOTAL_COLS = 30;
+
+// visualization controls
+let paused = true;
+let alg = null;
 
 function DraggableNode({ node, onDragEnd }) {
   const [, ref] = useDrag({
@@ -26,8 +30,6 @@ function DraggableNode({ node, onDragEnd }) {
   );
 }
 
-
-
 // Droppable Node
 function DroppableNode({ node, onDrop }) {
   const [, ref] = useDrop({
@@ -40,19 +42,44 @@ function DroppableNode({ node, onDrop }) {
   );
 }
 
+function clearGridKeepStartAndEnd(grid) {
+  for(let row of grid.nodes) {
+    for(let node of row) {
+      if(node.type !== "start" && node.type !== "end") {
+        node.clear();
+      }
+    }
+  }
+}
 
 export default function App() {
-  const [grid, setGrid] = useState(null);
+  let [grid, setGrid] = useState(null);
+  const timeoutRef = useRef(null); // for time outs
+  const [speed, setSpeed] = useState(100); // for speed control slider
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
-  const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm"];
+  const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A* (not done)"];
+
+  const handleSpeedChange = (e) => { // change speed with control slider
+    setSpeed(200 - e.target.value);
+    if(e > 190){
+      setSpeed(0);
+    }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      visualize();
+    }
+  };
 
   const handleAlgorithmChange = (algorithm) => {
     setSelectedAlgorithm(algorithm);
   };
 
   const handleClearClick = () => {
-    const newGrid = new Grid(TOTAL_ROWS, TOTAL_COLS);
-    setGrid(newGrid);
+    grid = new Grid(TOTAL_ROWS, TOTAL_COLS);
+    alg = new Algorithm(grid, algorithms);
+    setGrid(grid);
+
+    paused = true;
   };
 
   useEffect(() => {
@@ -75,29 +102,49 @@ export default function App() {
     setGrid(newGrid);
   };
   
-  const visualizeAlgorithm = (visited, path, ms) => {
-    visualizeTimeout(visited, 0, ms, "visited");
-    visualizeTimeout(path, visited.length * ms, ms, "path");
+  const handleVisualizeClick = () => {
+    // fixes a weird initialization issue with grid not having any nodes on start
+    alg = new Algorithm(grid, algorithms);
+
+    clearGridKeepStartAndEnd(grid);
+    alg.run(selectedAlgorithm);
+
+    if(paused) {
+      paused = false;
+      visualize(20);
+    }
   };
 
-  const visualizeTimeout = (set, delay, ms, type) => {
-    for (let i = 0; i < set.length; i++) {
-      setTimeout(() => {
-        const node = set[i];
-        if(node.type !== "start" && node.type !== "end") {
-          node.type = type;
-        }
-        const newGrid = [...grid.nodes];
-        setGrid({ nodes: newGrid });
-      }, 
-      ms * i + delay);
+  const visualize = () => {
+    if(!paused) {
+        step();
+        timeoutRef.current = setTimeout(visualize, speed);
     }
-  }
-  
-  const handleVisualizeClick = () => {
-    const alg = new Algorithm(grid);
-    alg.BFS();
-    visualizeAlgorithm(alg.visitedInOrder, alg.path, 50);
+  };
+
+  const step = () => {
+    if(alg.visualQueue.length > 0) {
+      const visualNode = alg.visualQueue.shift();
+      if(!(["start", "end"].indexOf(visualNode.node.type) + 1)) {
+        visualNode.node.updateType(visualNode.type);
+      }
+      setGrid({...grid});
+    }
+  };
+
+  const handlePauseButtonClick = () => {
+      paused = true;
+  };
+
+  const handleContinueButtonClick = () => {
+    if(paused) {
+      paused = false;
+      visualize(20);
+    }
+  };
+  const handleStepButtonClick = () => {
+    paused = true;
+    step();
   };
 
   return (
@@ -131,9 +178,17 @@ export default function App() {
             <div className="Button">
               Control
               <div className="ControlButtons">
-                <button className="ControlButton">Pause</button>
-                <button className="ControlButton">Continue</button>
-                <input type="range" className="Slider" />
+                <button className="ControlButton" onClick={() => {handlePauseButtonClick();}}>Pause</button>
+                <button className="ControlButton" onClick={() => {handleContinueButtonClick();}}>Continue</button>
+                <button className="ControlButton" onClick={() => {handleStepButtonClick();}}>Step</button>
+                <input 
+                type="range" 
+                className="Slider"
+                min="10" 
+                max="200" 
+                value={200 - speed} 
+                onChange={handleSpeedChange}
+                />
               </div>
             </div>
           </header>
@@ -156,4 +211,4 @@ export default function App() {
         </main>
       </DndProvider>
   );
-}
+} 

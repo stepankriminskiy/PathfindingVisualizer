@@ -25,17 +25,19 @@ export class Node {
     this.type = 'end';
   }
 
+  setAsObstacle(weight) {
+    this.type = 'obstacle';
+    this.weight = weight;
+  }
+
+  setAsWall() {
+    this.type = 'wall';
+  }
+
   // Other methods for node operations, e.g., clearType, etc.
   clear() {
     this.updateType("");
   }
-
-  setAsObstacle(weight) {
-    this.type = 'obstacle'
-    this.weight = weight
-  }
-
-  // Other methods for node operations, e.g., clearType, etc.
 }
 
 export class Obstacle {
@@ -101,6 +103,29 @@ export class Grid {
     for (let i = 0; i < this.rows; i++) {
       for (let j = 0; j < this.columns; j++) {
         this.nodes[i][j].type = ''; // Reset the type of each node
+      }
+    }
+  }
+
+  // Clear the obstacles
+  clearObstacles() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        if (this.nodes[i][j].type === "obstacle") {
+          this.nodes[i][j].type = ''; // Reset the type of the node
+          this.weight = 1; // Reset the weight of the node
+        }
+      }
+    }
+  }
+
+  // Clear the walls
+  clearWalls() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        if (this.nodes[i][j].type === "wall") {
+          this.nodes[i][j].type = ''; // Reset the type of the node
+        }
       }
     }
   }

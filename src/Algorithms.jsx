@@ -7,7 +7,7 @@ export class Algorithm {
 
         this.priorityQueue = new PriorityQueue();
         this.priorityQueue.enqueue([this.startNode, 0]);
-        
+
         this.queue = this.getNodes("start");
         this.visited = new Set();
         this.parents = new Map();
@@ -18,13 +18,13 @@ export class Algorithm {
     }
 
     clearQueue() {
-      //allows for multistart by taking all start nodes, not sure how that would look
-      this.queue = this.getNodes("start");
-      this.visited = new Set();
-      this.parents = new Map();
-      
-      this.visualQueue = [];
-  }
+        //allows for multistart by taking all start nodes, not sure how that would look
+        this.queue = this.getNodes("start");
+        this.visited = new Set();
+        this.parents = new Map();
+        
+        this.visualQueue = [];
+    }
 
     getNodes(type) {
         let output = [];
@@ -55,74 +55,80 @@ export class Algorithm {
     }
 
     run(algorithm) {
-      this.clearQueue();
-      const alg = this.algorithms.indexOf(algorithm);
+        this.clearQueue();
+        const alg = this.algorithms.indexOf(algorithm);
 
-      switch(alg) {
-          case 0:
-              this.BFS();
-              break;
-          case 1:
-              this.DFS();
-              break;
-          case 2:
-              this.DijkstrasAlgorithm();
-              break;
-          default:
-              this.BFS();
-      }
+        switch(alg) {
+            case 0:
+                this.BFS();
+                break;
+            case 1:
+                this.DFS();
+                break;
+            case 2:
+                this.DijkstrasAlgorithm();
+                break;
+            default:
+                this.BFS();
+        }
     }
 
     // algs added here
     BFS() {
-      while(this.queue.length) {
-          const currentNode = this.queue.shift();
-          if (currentNode.type === "obstacle") continue;
+        while(this.queue.length) {
+            const currentNode = this.queue.shift();
+            if (currentNode.type === "obstacle") continue;
 
-          this.visualQueue.push(new VisualNode(currentNode, "visited"));
-          this.visited.add(currentNode);
-      
-          if (currentNode.type === 'end') {
-              this.buildPath(currentNode);
-              break;
-          }
-      
-          const neighbors = currentNode.neighbors;
-          for (const neighbor of neighbors) {
-              if (!this.visited.has(neighbor)) {
-                  this.queue.push(neighbor);
-                  this.visited.add(neighbor);
-                  this.parents.set(neighbor, currentNode);
-              }
-          }
-      };
+            this.visualQueue.push(new VisualNode(currentNode, "visited"));
+            this.visited.add(currentNode);
+        
+            if (currentNode.type === 'end') {
+                this.buildPath(currentNode);
+                break;
+            }
+        
+            const neighbors = currentNode.neighbors;
+            for (const neighbor of neighbors) {
+                if (neighbor.type === "wall") {
+                    continue;
+                }
+                if (!this.visited.has(neighbor)) {
+                    this.queue.push(neighbor);
+                    this.visited.add(neighbor);
+                    this.parents.set(neighbor, currentNode);
+                }
+            }
+        };
     }
 
     DFS() {
-      while(this.queue.length) {
-          const currentNode = this.queue.shift();
-          if (currentNode.type === "obstacle") continue;
+        while(this.queue.length) {
+            const currentNode = this.queue.pop();
+            if (currentNode.type === "obstacle") continue;
+  
+            this.visualQueue.push(new VisualNode(currentNode, "visited"));
+            this.visited.add(currentNode);
+        
+            if (currentNode.type === 'end') {
+                this.buildPath(currentNode);
+                break;
+            }
+        
+            const neighbors = currentNode.neighbors;
+            for (const neighbor of neighbors) {
+                if (neighbor.type === "wall") {
+                    continue;
+                }
+                if (!this.visited.has(neighbor)) {
+                    this.queue.push(neighbor);
+                    this.visited.add(neighbor);
+                    this.parents.set(neighbor, currentNode);
+                }
+            }
+        };
+      }
 
-          this.visualQueue.push(new VisualNode(currentNode, "visited"));
-          this.visited.add(currentNode);
-      
-          if (currentNode.type === 'end') {
-              this.buildPath(currentNode);
-              break;
-          }
-      
-          const neighbors = currentNode.neighbors;
-          for (const neighbor of neighbors) {
-              if (!this.visited.has(neighbor)) {
-                  this.queue.unshift(neighbor);
-                  this.visited.add(neighbor);
-                  this.parents.set(neighbor, currentNode);
-              }
-          }
-      };
-  }
-
-    DijkstrasAlgorithm() {
+      DijkstrasAlgorithm() {
         // Initialize the distance from the source node to itself as 0.
         const distances = new Map();
         distances.set(this.startNode, 0);
@@ -145,6 +151,9 @@ export class Algorithm {
             
             // Visit neighbors and update distances if a shorter path is found.
             for (const neighbor of currentNode.neighbors) {
+                if (neighbor.type === "wall") {
+                    continue;
+                }
                 // Calculate the new distance from the source to the neighbor through the current node.
                 const newDistance = distances.get(currentNode) + neighbor.weight; 
     
@@ -152,16 +161,21 @@ export class Algorithm {
                 if (!distances.has(neighbor) || newDistance < distances.get(neighbor)) {
                     distances.set(neighbor, newDistance);
                     this.parents.set(neighbor, currentNode);
-    
-                      this.priorityQueue.enqueue([neighbor, newDistance]);
+                    this.priorityQueue.enqueue([neighbor, newDistance]);
                 }
             }
         }
     }
-    
 }
 
-export class PriorityQueue {
+class VisualNode {
+    constructor(node, type) {
+        this.node = node;
+        this.type = type;
+    }
+}
+
+class PriorityQueue {
     constructor() {
       this.items = [];
     }
@@ -205,10 +219,3 @@ export class PriorityQueue {
       return this.items.length;
     }
   }
-
-  class VisualNode {
-    constructor(node, type) {
-        this.node = node;
-        this.type = type;
-    }
-}
