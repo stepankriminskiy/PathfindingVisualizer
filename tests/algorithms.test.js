@@ -1,5 +1,5 @@
-import { Algorithm, VisualNode } from '../src/Algorithms.jsx'; // Import Algorithm class 
-import { Grid } from '../src/DataStructures.jsx'; // Import DataStructures class 
+import { Algorithm, VisualNode } from '../src/Algorithms.jsx'; // Import Algorithm and VisualNode class 
+import { Grid } from '../src/DataStructures.jsx'; // Import Grid class 
 
 describe('Algorithm', () => {
   let algorithm;
