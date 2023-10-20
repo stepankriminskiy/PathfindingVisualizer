@@ -247,14 +247,19 @@ export default function App() {
                       return (
                           <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
                       );
+                    } else if (addingWalls) {
+                      return (
+                          <div
+                              key={nodeIndex}
+                              className={`node ${node.type}`}
+                              onClick={() => handleDroppableNodeClick(node.row, node.col)}
+                          ></div>
+                      );
+                    } else {
+                      return (
+                          <DroppableNode key={nodeIndex} node={node} />
+                      );
                     }
-                    return (
-                        <div
-                            key={nodeIndex}
-                            className={`node ${node.type}`}
-                            onClick={() => handleDroppableNodeClick(node.row, node.col)} // Handle clicks
-                        ></div>
-                    );
                   })}
                 </div>
             ))}
