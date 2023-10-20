@@ -102,4 +102,94 @@ describe('Algorithm', () => {
     });
   });
 
+  describe('distance', () => {
+    it('should calculate the distance between two nodes', () => {
+      const node1 = grid.nodes[0][0];
+      const node2 = grid.nodes[0][2];
+
+      const calculatedDistance = algorithm.distance(node1, node2);
+
+      expect(calculatedDistance).toBe(2);
+    });
+  });
+
+  describe('run', () => {
+    it('should call the correct algorithm based on the provided index', () => {
+      const mockBFS = jest.spyOn(algorithm, 'BFS');
+      const mockDFS = jest.spyOn(algorithm, 'DFS');
+      const mockDijkstra = jest.spyOn(algorithm, 'DijkstrasAlgorithm');
+      const mockAstar = jest.spyOn(algorithm, 'Astar');
+
+      // Test calling each algorithm by providing the algorithm
+      algorithm.run('Breadth-First Search');
+      expect(mockBFS).toHaveBeenCalled();
+
+      algorithm.run('Depth-First Search');
+      expect(mockDFS).toHaveBeenCalled();
+
+      algorithm.run("Dijkstra's Algorithm");
+      expect(mockDijkstra).toHaveBeenCalled();
+
+      algorithm.run("Basic A* (not done)");
+      expect(mockAstar).toHaveBeenCalled();
+    });
+
+    it('should default to BFS if an invalid index is provided', () => {
+      const mockBFS = jest.spyOn(algorithm, 'BFS');
+
+      algorithm.run("Breadth-First Algorithm"); // Invalid algorithm
+
+      expect(mockBFS).toHaveBeenCalled();
+    });
+  });
+
+  describe('BFS', () => {
+    it('should execute the BFS algorithm correctly', () => {
+      // Create a grid with a simple BFS path
+      const grid = new Grid(5, 5);
+      grid.nodes[0][0].type = 'start';
+      grid.nodes[4][4].type = 'end';
+      const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A* (not done)"];
+
+      const algorithm = new Algorithm(grid, algorithms);
+      algorithm.BFS();
+
+      // Check that it found the shortest path
+      expect(algorithm.path.length).toEqual(9);
+    });
+  });
+
+  describe('DFS', () => {
+    it('should execute the DFS algorithm correctly', () => {
+      // Create a grid with a simple BFS path
+      const grid = new Grid(5, 5);
+      grid.nodes[0][0].type = 'start';
+      grid.nodes[2][0].type = 'end';
+      const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A* (not done)"];
+
+      const algorithm = new Algorithm(grid, algorithms);
+      algorithm.DFS();
+
+      // Check that it traversed the graph according to the DFS algorithm instead of finding the shortest path
+      expect(algorithm.path.length).toEqual(11);
+    });
+  });
+
+  describe('Dijjkstras Algorithm', () => {
+    it('should execute Dijkstras Algorithm correctly', () => {
+      // Create a grid with a simple BFS path
+      const grid = new Grid(5, 5);
+      grid.nodes[0][0].type = 'start';
+      grid.nodes[0][4].type = 'end';
+      grid.nodes[0][2].setAsObstacle(5);
+      const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A* (not done)"];
+
+      const algorithm = new Algorithm(grid, algorithms);
+      algorithm.DijkstrasAlgorithm();
+
+      // Check that it found the shortest path taking the weight of the nodes into account
+      expect(algorithm.path.length).toEqual(7);
+    });
+  });
+
 });
