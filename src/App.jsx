@@ -43,9 +43,9 @@ function DroppableNode({ node, onDrop }) {
 }
 
 function clearGridKeepStartAndEnd(grid) {
-  for(let row of grid.nodes) {
-    for(let node of row) {
-      if(node.type !== "start" && node.type !== "end") {
+  for (let row of grid.nodes) {
+    for (let node of row) {
+      if (node.type !== "start" && node.type !== "end" && node.type !== "wall") { // Preserve wall nodes
         node.clear();
       }
     }
@@ -60,6 +60,7 @@ export default function App() {
   const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A* (not done)"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
   const nodeOptions = ['Add Walls', 'Remove Walls', 'Increase Node Weight', 'Decrease Node Weight'];
+  const [addingWalls, setAddingWalls] = useState(false); // Step 1
 
   const handleSpeedChange = (e) => { // change speed with control slider
     setSpeed(200 - e.target.value);
@@ -76,8 +77,32 @@ export default function App() {
     setSelectedAlgorithm(algorithm);
   };
 
+
   const handleNodeOptionChange = (nodeOption) => {
     setSelectedNodeOption(nodeOption);
+
+    if (nodeOption === 'Add Walls') {
+      setAddingWalls(!addingWalls);
+    } else {
+      // Reset "Add Walls" mode when a different option is selected
+      setAddingWalls(false);
+    }
+  };
+
+  function handleDroppableNodeClick(row, col) {
+    if (addingWalls) {
+      const newGrid = { ...grid };
+      newGrid.nodes[row][col].type = 'wall';
+      setGrid(newGrid);
+    }
+  }
+
+  const handleGridClick = (row, col) => {
+    if (addingWalls) {
+      const newGrid = { ...grid };
+      newGrid.nodes[row][col].setAsWall(); // Set the clicked node as a wall
+      setGrid(newGrid);
+    }
   };
 
   const handleClearClick = () => {
@@ -180,7 +205,7 @@ export default function App() {
                   {nodeOptions.map((nodeOption, index) => (
                       <div
                           key={index}
-                          className={`DropdownItem ${selectedNodeOption === nodeOption ? 'Selected' : ''}`}
+                          className={`DropdownItem ${selectedNodeOption === nodeOption && addingWalls ? 'Selected' : ''}`}
                           onClick={() => handleNodeOptionChange(nodeOption)}
                       >
                         {nodeOption}
@@ -224,7 +249,11 @@ export default function App() {
                       );
                     }
                     return (
-                        <DroppableNode key={nodeIndex} node={node} />
+                        <div
+                            key={nodeIndex}
+                            className={`node ${node.type}`}
+                            onClick={() => handleDroppableNodeClick(node.row, node.col)} // Handle clicks
+                        ></div>
                     );
                   })}
                 </div>
