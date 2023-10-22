@@ -89,7 +89,7 @@ export class Algorithm {
     BFS() {
         while(this.queue.length) {
             const currentNode = this.queue.shift();
-            if (currentNode.type === "obstacle") continue;
+            if (currentNode.type === "wall") continue;
 
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
@@ -116,7 +116,7 @@ export class Algorithm {
     DFS() {
         while(this.queue.length) {
             const currentNode = this.queue.pop();
-            if (currentNode.type === "obstacle") continue;
+            if (currentNode.type === "wall") continue;
   
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
@@ -149,7 +149,7 @@ export class Algorithm {
         while(this.queue.length) {
             const currentTuple = this.queue.shift();
             const currentNode = currentTuple[0]
-            if (currentNode.type === "obstacle") continue;
+            if (currentNode.type === "wall") continue;
 
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);

@@ -38,7 +38,9 @@ function DroppableNode({ node, onDrop, onClick  }) {
   });
 
   return (
-    <div ref={ref} className={`node ${node.type}`} onClick={onClick}></div>
+    <div ref={ref} className={`node ${node.type}`} onClick={onClick}>
+      {node.weight > 1 ? node.weight : ""}
+    </div>
   );
 }
 
@@ -57,9 +59,9 @@ export default function App() {
   const timeoutRef = useRef(null); // for time outs
   const [speed, setSpeed] = useState(100); // for speed control slider
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
-  const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A* (not done)"];
+  const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
-  const nodeOptions = ['Add Walls', 'Remove ALL Walls', 'Select Obstacle Remover', 'Increase Node Weight', 'Decrease Node Weight',];
+  const nodeOptions = ['Add Walls', 'Remove ALL Walls', 'Select Obstacle Remover', 'Increase Node Weight', 'Decrease Node Weight', 'Reset All Weights'];
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
   const [actionMode, setActionMode] = useState('');
   const [dragging, setDragging] = useState(false);
@@ -89,8 +91,16 @@ export default function App() {
     else if(nodeOption === 'Select Obstacle Remover') {
       setActionMode('clearNode');
     }
+    else if(nodeOption === 'Increase Node Weight') {
+      setActionMode('increaseWeight');
+    }
+    else if(nodeOption === 'Decrease Node Weight') {
+      setActionMode('decreaseWeight');
+    }
+    else if(nodeOption === 'Reset All Weights') {
+      handleClearWeightsClick();
+    }
     else if(nodeOption === 'Remove ALL Walls'){
-      setActionMode('');
       handleClearWallsClick();
     }
   };
@@ -117,6 +127,16 @@ export default function App() {
               node.type = '';
           }
           break;
+      case 'increaseWeight':
+          if (node.type !== 'start' && node.type !== 'end') {
+              node.weight += 1;
+          }
+          break;
+      case 'decreaseWeight':
+          if (node.type !== 'start' && node.type !== 'end' && node.weight > 1) {
+              node.weight -= 1;
+          }
+          break;
       default:
           break;
     }
@@ -131,6 +151,16 @@ export default function App() {
 
     paused = true;
   };
+  const handleClearWeightsClick = () => {
+    const newGrid = {...grid};
+    for(let i = 0; i < newGrid.nodes.length; i++) {
+        for(let j = 0; j < newGrid.nodes[i].length; j++) {
+                newGrid.nodes[i][j].weight = 1;
+            
+        }
+    }
+    setGrid(newGrid);
+};
   const handleClearWallsClick = () => {
     const newGrid = {...grid};
     for(let i = 0; i < newGrid.nodes.length; i++) {
