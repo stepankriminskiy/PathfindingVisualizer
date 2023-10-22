@@ -31,14 +31,14 @@ function DraggableNode({ node, onDragEnd }) {
 }
 
 // Droppable Node
-function DroppableNode({ node, onDrop }) {
+function DroppableNode({ node, onDrop, onClick  }) {
   const [, ref] = useDrop({
     accept: 'NODE',
     drop: () => ({ row: node.row, col: node.col }),
   });
 
   return (
-      <div ref={ref} className={`node ${node.type}`}></div>
+    <div ref={ref} className={`node ${node.type}`} onClick={onClick}></div>
   );
 }
 
@@ -59,8 +59,10 @@ export default function App() {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
   const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A* (not done)"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
-  const nodeOptions = ['Add Walls', 'Remove Walls', 'Increase Node Weight', 'Decrease Node Weight'];
+  const nodeOptions = ['Add Walls', 'Remove ALL Walls', 'Select Obstacle Remover', 'Increase Node Weight', 'Decrease Node Weight',];
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
+  const [actionMode, setActionMode] = useState('');
+  const [dragging, setDragging] = useState(false);
 
   const handleSpeedChange = (e) => { // change speed with control slider
     setSpeed(200 - e.target.value);
@@ -82,28 +84,45 @@ export default function App() {
     setSelectedNodeOption(nodeOption);
 
     if (nodeOption === 'Add Walls') {
-      setAddingWalls(!addingWalls);
-    } else {
-      // Reset "Add Walls" mode when a different option is selected
-      setAddingWalls(false);
+      setActionMode('addWalls');
+    } 
+    else if(nodeOption === 'Select Obstacle Remover') {
+      setActionMode('clearNode');
+    }
+    else if(nodeOption === 'Remove ALL Walls'){
+      setActionMode('');
+      handleClearWallsClick();
     }
   };
 
   function handleDroppableNodeClick(row, col) {
-    if (addingWalls) {
-      const newGrid = { ...grid };
-      newGrid.nodes[row][col].type = 'wall';
-      setGrid(newGrid);
+    const newGrid = { ...grid };
+    const node = newGrid.nodes[row][col];
+      // Check if the clicked node is 'start' or 'end'
+
+
+    switch (actionMode) {
+      case 'addWalls':
+          if (node.type !== 'start' && node.type !== 'end') {
+            node.type = 'wall';
+          }
+          break;
+      case 'removeWalls':
+          if (node.type === 'wall') {
+              node.type = '';
+          }
+          break;
+      case 'clearNode':
+          if (node.type !== 'start' && node.type !== 'end') {
+              node.type = '';
+          }
+          break;
+      default:
+          break;
     }
+    setGrid(newGrid);
   }
 
-  const handleGridClick = (row, col) => {
-    if (addingWalls) {
-      const newGrid = { ...grid };
-      newGrid.nodes[row][col].setAsWall(); // Set the clicked node as a wall
-      setGrid(newGrid);
-    }
-  };
 
   const handleClearClick = () => {
     grid = new Grid(TOTAL_ROWS, TOTAL_COLS);
@@ -112,6 +131,17 @@ export default function App() {
 
     paused = true;
   };
+  const handleClearWallsClick = () => {
+    const newGrid = {...grid};
+    for(let i = 0; i < newGrid.nodes.length; i++) {
+        for(let j = 0; j < newGrid.nodes[i].length; j++) {
+            if(newGrid.nodes[i][j].type === 'wall') {
+                newGrid.nodes[i][j].type = '';
+            }
+        }
+    }
+    setGrid(newGrid);
+};
 
   useEffect(() => {
     const initialGrid = new Grid(TOTAL_ROWS, TOTAL_COLS);
@@ -131,6 +161,7 @@ export default function App() {
     newGrid.nodes[dropResult.row][dropResult.col].type = draggedItem.id;
 
     setGrid(newGrid);
+    setDragging(false);
   };
   
   const handleVisualizeClick = () => {
@@ -205,7 +236,7 @@ export default function App() {
                   {nodeOptions.map((nodeOption, index) => (
                       <div
                           key={index}
-                          className={`DropdownItem ${selectedNodeOption === nodeOption && addingWalls ? 'Selected' : ''}`}
+                          className={`DropdownItem ${selectedNodeOption === nodeOption ? 'Selected' : ''}`}
                           onClick={() => handleNodeOptionChange(nodeOption)}
                       >
                         {nodeOption}
@@ -240,29 +271,28 @@ export default function App() {
             </div>
           </header>
           <div className="grid-container">
-            {grid && grid.nodes.map((row, rowIndex) => (
-                <div key={rowIndex} className="row">
-                  {row.map((node, nodeIndex) => {
-                    if (node.type === 'start' || node.type === 'end') {
-                      return (
-                          <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
-                      );
-                    } else if (addingWalls) {
-                      return (
-                          <div
-                              key={nodeIndex}
-                              className={`node ${node.type}`}
-                              onClick={() => handleDroppableNodeClick(node.row, node.col)}
-                          ></div>
-                      );
-                    } else {
-                      return (
-                          <DroppableNode key={nodeIndex} node={node} />
-                      );
-                    }
-                  })}
-                </div>
-            ))}
+          {grid && grid.nodes.map((row, rowIndex) => (
+            <div key={rowIndex} className="row">
+            {row.map((node, nodeIndex) => {
+                // If it's a start or end node, return them wrapped in DraggableNode.
+                if (node.type === 'start' || node.type === 'end') {
+                    return (
+                        <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
+                    );
+                } 
+                // For all other nodes, return them wrapped in DroppableNode.
+                else {
+                    return (
+                        <DroppableNode 
+                            key={nodeIndex} 
+                            node={node} 
+                            onClick={() => handleDroppableNodeClick(node.row, node.col)}
+                        />
+                    );
+                }
+            })}
+        </div>
+        ))}
           </div>
         </main>
       </DndProvider>
