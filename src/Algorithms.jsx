@@ -89,7 +89,7 @@ export class Algorithm {
     BFS() {
         while(this.queue.length) {
             const currentNode = this.queue.shift();
-            if (currentNode.type === "obstacle") continue;
+            if (currentNode.type === "wall") continue;
 
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
@@ -116,7 +116,7 @@ export class Algorithm {
     DFS() {
         while(this.queue.length) {
             const currentNode = this.queue.pop();
-            if (currentNode.type === "obstacle") continue;
+            if (currentNode.type === "wall") continue;
   
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
@@ -141,15 +141,20 @@ export class Algorithm {
       }
 
       Astar() {
-        for(let i = 0; i < this.queue.length; i++) {
-            const node = this.queue[i];
-            this.queue[i] = [node, this.distance(node, this.endNode)];
-        }
+        let pqueue = new PriorityQueue()
+        let gcosts = new BetterMap()
 
         while(this.queue.length) {
-            const currentTuple = this.queue.shift();
-            const currentNode = currentTuple[0]
-            if (currentNode.type === "obstacle") continue;
+            const node = this.queue.shift();
+            const an = new AStarNode(node, this.distance(node, this.endNode), 0);
+            pqueue.enqueue([an, an.getCost()]);
+            gcosts.set(node, 0)
+        }
+
+        while(pqueue.size()) {
+            const currentAStarNode = pqueue.dequeue();
+            const currentNode = currentAStarNode.node;
+            if (currentNode.type === "wall") continue;
 
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
@@ -159,21 +164,22 @@ export class Algorithm {
                 break;
             }
         
-            const neighbors = currentNode.neighbors;
-            for (const neighbor of neighbors) {
+            const neighbors = currentNode.neighbors
+            for(const neighbor of neighbors) {
+                if (neighbor.type === "wall") {
+                    continue;
+                }
+
+                const newNeighbors = neighbor.neighbors;
+                let newGCost = currentAStarNode.gcost + 1;
+                for(const newNeighbor of newNeighbors) {
+                    const cost = gcosts.getOrElse(newNeighbor, Infinity);
+                    newGCost = Math.min(newGCost, cost + 1);
+                }
+
                 if (!this.visited.has(neighbor)) {
-                    this.queue.push([neighbor, this.distance(neighbor, this.endNode)]);
-
-                    // console.log("================BEFORE===============: ");
-                    // for(const a of this.queue) {console.log(a)}
-
-                    this.queue.sort((a, b) => {
-                        return a[1] - b[1];
-                    });
-
-                    // console.log("================AFTER===============: ");
-                    // for(const a of this.queue) {console.log(a)}
-
+                    const an = new AStarNode(neighbor, this.distance(neighbor, this.endNode), newGCost);
+                    pqueue.enqueue([an, an.getCost()]);
                     this.visited.add(neighbor);
                     this.parents.set(neighbor, currentNode);
                 }
@@ -272,3 +278,33 @@ class PriorityQueue {
       return this.items.length;
     }
   }
+
+class AStarNode {
+    constructor(node, f, g) {
+        this.node = node;
+        this.fcost = f;
+        this.gcost = g;
+    }
+
+    getCost() {
+        return this.fcost + this.gcost;
+    }
+}
+
+class BetterMap {
+    constructor() {
+        this.map = new Map()
+    }
+
+    set(a, b) {
+        this.map.set(a, b)
+    }
+
+    getOrElse(a, b) {
+        const get = this.map.get(a);
+        if(get === undefined) {
+            return b;
+        }
+        return get;
+    }
+}
