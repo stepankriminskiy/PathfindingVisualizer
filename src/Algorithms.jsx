@@ -8,6 +8,9 @@ export class Algorithm {
         this.priorityQueue = new PriorityQueue();
         this.priorityQueue.enqueue([this.startNode, 0]);
 
+        this.distances = new Map();
+        this.distances.set(this.startNode, 0);
+
         this.queue = this.getNodes("start");
         this.visited = new Set();
         this.parents = new Map();
@@ -108,9 +111,11 @@ export class Algorithm {
                     this.queue.push(neighbor);
                     this.visited.add(neighbor);
                     this.parents.set(neighbor, currentNode);
+                    this.distances.set(neighbor, this.distances.get(currentNode) + 1);
                 }
             }
         };
+        return "No path exists.";
     }
 
     DFS() {
@@ -135,9 +140,11 @@ export class Algorithm {
                     this.queue.push(neighbor);
                     this.visited.add(neighbor);
                     this.parents.set(neighbor, currentNode);
+                    this.distances.set(neighbor, this.distances.get(currentNode) + 1);
                 }
             }
         };
+        return "No path exists.";
       }
 
       Astar() {
@@ -182,9 +189,6 @@ export class Algorithm {
     }
 
       DijkstrasAlgorithm() {
-        // Initialize the distance from the source node to itself as 0.
-        const distances = new Map();
-        distances.set(this.startNode, 0);
         
         while (!this.priorityQueue.isEmpty()) {
             // Extract the node with the smallest distance from the priority queue.
@@ -208,16 +212,17 @@ export class Algorithm {
                     continue;
                 }
                 // Calculate the new distance from the source to the neighbor through the current node.
-                const newDistance = distances.get(currentNode) + neighbor.weight; 
+                const newDistance = this.distances.get(currentNode) + neighbor.weight; 
     
                 // If the new distance is shorter, update the distance and parent information.
-                if (!distances.has(neighbor) || newDistance < distances.get(neighbor)) {
-                    distances.set(neighbor, newDistance);
+                if (!this.distances.has(neighbor) || newDistance < this.distances.get(neighbor)) {
+                    this.distances.set(neighbor, newDistance);
                     this.parents.set(neighbor, currentNode);
                     this.priorityQueue.enqueue([neighbor, newDistance]);
                 }
             }
         }
+        return "No path exists.";
     }
 }
 
