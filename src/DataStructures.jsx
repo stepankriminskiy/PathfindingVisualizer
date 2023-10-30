@@ -130,5 +130,26 @@ export class Grid {
     }
   }
 
+  // Clear the obstacles and walls
+  clearObstaclesAndWalls() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        if (this.nodes[i][j].type === "obstacle" || this.nodes[i][j].type === "wall") {
+          this.nodes[i][j].type = ''; // Reset the type of the node
+        }
+      }
+    }
+  }
+
+  generateMaze() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        if (Math.random() > 0.75) {
+          this.nodes[i][j].type = 'wall'; 
+        }
+      }
+    }
+  }
+
   // Other methods for grid operations, e.g., updateNode, addObstacle, removeObstacle, setAsStart, setAsEnd, etc.
 }
