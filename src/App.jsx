@@ -59,7 +59,7 @@ export default function App() {
   const timeoutRef = useRef(null); // for time outs
   const [speed, setSpeed] = useState(100); // for speed control slider
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
-  const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*"];
+  const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*", "Weighted A*"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
   const nodeOptions = ['Add Walls', 'Remove ALL Walls', 'Select Obstacle Remover', 'Increase Node Weight', 'Decrease Node Weight', 'Reset All Weights'];
   const [addingWalls, setAddingWalls] = useState(false); // Step 1

@@ -71,6 +71,9 @@ export class Algorithm {
             case 3:
                 this.Astar();
                 break;
+            case 4:
+                this.WeigtedAstar();
+                break;
             default:
                 this.BFS();
         }
@@ -186,7 +189,7 @@ export class Algorithm {
                     const an = new AStarNode(neighbor, this.distance(neighbor, this.endNode), newGCost);
                     pqueue.enqueue([an, an.getCost()]);
                     this.visited.add(neighbor);
-                    this.parents.set(neighbor, currentNode);
+                    this.parents.set(neighbor, newParent);
                 }
             }
         }
@@ -226,6 +229,58 @@ export class Algorithm {
                     distances.set(neighbor, newDistance);
                     this.parents.set(neighbor, currentNode);
                     this.priorityQueue.enqueue([neighbor, newDistance]);
+                }
+            }
+        }
+    }
+    
+    WeigtedAstar() {
+        let pqueue = new PriorityQueue()
+        let gcosts = new BetterMap()
+
+        while (this.queue.length) {
+            const node = this.queue.shift();
+            const an = new AStarNode(node, this.distance(node, this.endNode), 0);
+            pqueue.enqueue([an, an.getCost()]);
+            gcosts.set(node, 0)
+        }
+
+        while (pqueue.size()) {
+            const currentAStarNode = pqueue.dequeue();
+            const currentNode = currentAStarNode.node;
+            if (currentNode.type === "wall") continue;
+
+            this.visualQueue.push(new VisualNode(currentNode, "visited"));
+            this.visited.add(currentNode);
+
+            if (currentNode.type === 'end') {
+                this.buildPath(currentNode);
+                break;
+            }
+
+            const neighbors = currentNode.neighbors
+            for (const neighbor of neighbors) {
+                if (neighbor.type === "wall") {
+                    continue;
+                }
+
+                const newNeighbors = neighbor.neighbors;
+                let newGCost = currentAStarNode.gcost + neighbor.weight;
+                let newParent = currentNode;
+                for (const newNeighbor of newNeighbors) {
+                    const cost = gcosts.getOrElse(newNeighbor, Infinity);
+                    const newCost = Math.min(newGCost, cost + neighbor.weight);
+                    if (newCost != newGCost) {
+                        newGCost = newCost;
+                        newParent = newNeighbor;
+                    }
+                }
+
+                if (!this.visited.has(neighbor)) {
+                    const an = new AStarNode(neighbor, this.distance(neighbor, this.endNode), newGCost);
+                    pqueue.enqueue([an, an.getCost()]);
+                    this.visited.add(neighbor);
+                    this.parents.set(neighbor, newParent);
                 }
             }
         }
