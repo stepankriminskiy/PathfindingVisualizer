@@ -61,7 +61,7 @@ export default function App() {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
   const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*", "Weighted A*"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
-  const nodeOptions = ['Add Walls', 'Remove ALL Walls', 'Select Obstacle Remover', 'Increase Node Weight', 'Decrease Node Weight', 'Reset All Weights'];
+  const nodeOptions = ['Add Walls', 'Remove ALL Walls', 'Select Obstacle Remover', 'Increase Node Weight', 'Decrease Node Weight', 'Reset All Weights', 'Add Checkpoint'];
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
   const [actionMode, setActionMode] = useState('');
   const [dragging, setDragging] = useState(false);
@@ -84,24 +84,29 @@ export default function App() {
 
   const handleNodeOptionChange = (nodeOption) => {
     setSelectedNodeOption(nodeOption);
-
-    if (nodeOption === 'Add Walls') {
-      setActionMode('addWalls');
-    } 
-    else if(nodeOption === 'Select Obstacle Remover') {
-      setActionMode('clearNode');
-    }
-    else if(nodeOption === 'Increase Node Weight') {
-      setActionMode('increaseWeight');
-    }
-    else if(nodeOption === 'Decrease Node Weight') {
-      setActionMode('decreaseWeight');
-    }
-    else if(nodeOption === 'Reset All Weights') {
-      handleClearWeightsClick();
-    }
-    else if(nodeOption === 'Remove ALL Walls'){
-      handleClearWallsClick();
+    switch(nodeOption) {
+      default:
+      case 'Add Walls':
+        setActionMode('addWalls');
+        break;
+      case 'Select Obstacle Remover':
+        setActionMode('clearNode');
+        break;
+      case 'Increase Node Weight':
+        setActionMode('increaseWeight');
+        break;
+      case 'Decrease Node Weight':
+        setActionMode('decreaseWeight');
+        break;
+      case 'Reset All Weights':
+        handleClearWeightsClick();
+        break;
+      case 'Remove ALL Walls':
+        handleClearWallsClick();
+        break;
+      case 'Add Checkpoint':
+        setActionMode('addCheckpoint');
+        break;
     }
   };
 
@@ -137,6 +142,10 @@ export default function App() {
               node.weight -= 1;
           }
           break;
+      case 'addCheckpoint':
+        if (node.type !== 'start' && node.type !== 'end') {
+          node.type = 'checkpoint';
+        }
       default:
           break;
     }

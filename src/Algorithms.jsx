@@ -4,6 +4,7 @@ export class Algorithm {
 
         this.startNode = this.getNodes("start")[0];
         this.endNode = this.getNodes("end")[0];
+        this.checkpoints = this.getNodes("checkpoint");
 
         this.priorityQueue = new PriorityQueue();
         this.priorityQueue.enqueue([this.startNode, 0]);
@@ -15,6 +16,14 @@ export class Algorithm {
         this.visualQueue = [];
 
         this.algorithms = algorithms;
+    }
+
+    isObstacle(node) {
+        const obstacles = [
+            "wall",
+            "checkpoint"
+        ];
+        return obstacles.indexOf(node.type) >= 0;
     }
 
     clearQueue() {
@@ -59,6 +68,7 @@ export class Algorithm {
         const alg = this.algorithms.indexOf(algorithm);
 
         switch (alg) {
+            default:
             case 0:
                 this.BFS();
                 break;
@@ -73,9 +83,7 @@ export class Algorithm {
                 break;
             case 4:
                 this.WeigtedAstar();
-                break;
-            default:
-                this.BFS();
+                break;          
         }
     }
 
@@ -92,7 +100,7 @@ export class Algorithm {
     BFS() {
         while (this.queue.length) {
             const currentNode = this.queue.shift();
-            if (currentNode.type === "wall") continue;
+            if (this.isObstacle(currentNode)) continue;
 
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
@@ -104,9 +112,7 @@ export class Algorithm {
 
             const neighbors = currentNode.neighbors;
             for (const neighbor of neighbors) {
-                if (neighbor.type === "wall") {
-                    continue;
-                }
+                if (this.isObstacle(neighbor)) continue;
                 if (!this.visited.has(neighbor)) {
                     this.queue.push(neighbor);
                     this.visited.add(neighbor);
@@ -119,7 +125,7 @@ export class Algorithm {
     DFS() {
         while (this.queue.length) {
             const currentNode = this.queue.pop();
-            if (currentNode.type === "wall") continue;
+            if (this.isObstacle(currentNode)) continue;
 
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
@@ -131,9 +137,7 @@ export class Algorithm {
 
             const neighbors = currentNode.neighbors;
             for (const neighbor of neighbors) {
-                if (neighbor.type === "wall") {
-                    continue;
-                }
+                if (this.isObstacle(neighbor)) continue;
                 if (!this.visited.has(neighbor)) {
                     this.queue.push(neighbor);
                     this.visited.add(neighbor);
@@ -157,7 +161,7 @@ export class Algorithm {
         while (pqueue.size()) {
             const currentAStarNode = pqueue.dequeue();
             const currentNode = currentAStarNode.node;
-            if (currentNode.type === "wall") continue;
+            if (this.isObstacle(currentNode)) continue;
 
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
@@ -169,9 +173,7 @@ export class Algorithm {
 
             const neighbors = currentNode.neighbors
             for (const neighbor of neighbors) {
-                if (neighbor.type === "wall") {
-                    continue;
-                }
+                if (this.isObstacle(neighbor)) continue;
 
                 const newNeighbors = neighbor.neighbors;
                 let newGCost = currentAStarNode.gcost + 1;
@@ -218,9 +220,8 @@ export class Algorithm {
 
             // Visit neighbors and update distances if a shorter path is found.
             for (const neighbor of currentNode.neighbors) {
-                if (neighbor.type === "wall") {
-                    continue;
-                }
+                if (this.isObstacle(neighbor)) continue;
+
                 // Calculate the new distance from the source to the neighbor through the current node.
                 const newDistance = distances.get(currentNode) + neighbor.weight;
 
@@ -248,7 +249,7 @@ export class Algorithm {
         while (pqueue.size()) {
             const currentAStarNode = pqueue.dequeue();
             const currentNode = currentAStarNode.node;
-            if (currentNode.type === "wall") continue;
+            if (this.isObstacle(currentNode)) continue;
 
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
@@ -260,9 +261,7 @@ export class Algorithm {
 
             const neighbors = currentNode.neighbors
             for (const neighbor of neighbors) {
-                if (neighbor.type === "wall") {
-                    continue;
-                }
+                if (this.isObstacle(neighbor)) continue;
 
                 const newNeighbors = neighbor.neighbors;
                 let newGCost = currentAStarNode.gcost + neighbor.weight;
