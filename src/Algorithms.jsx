@@ -1,7 +1,7 @@
 export class Algorithm {
     constructor(grid, algorithms) {
         this.grid = grid;
-        
+
         this.startNode = this.getNodes("start")[0];
         this.endNode = this.getNodes("end")[0];
 
@@ -11,7 +11,7 @@ export class Algorithm {
         this.queue = this.getNodes("start");
         this.visited = new Set();
         this.parents = new Map();
-        
+
         this.visualQueue = [];
 
         this.algorithms = algorithms;
@@ -22,15 +22,15 @@ export class Algorithm {
         this.queue = this.getNodes("start");
         this.visited = new Set();
         this.parents = new Map();
-        
+
         this.visualQueue = [];
     }
 
     getNodes(type) {
         let output = [];
-        for(let row of this.grid.nodes) {
-            for(let node of row) {
-                if(node.type === type) {
+        for (let row of this.grid.nodes) {
+            for (let node of row) {
+                if (node.type === type) {
                     output.push(node)
                 }
             }
@@ -45,11 +45,11 @@ export class Algorithm {
     buildPath(start) {
         let currentNode = start;
         let path = []
-        while(currentNode !== undefined) {
+        while (currentNode !== undefined) {
             path.unshift(currentNode);
             currentNode = this.parents.get(currentNode);
         }
-        for(const node of path) {
+        for (const node of path) {
             this.visualQueue.push(new VisualNode(node, "path"));
         }
     }
@@ -58,7 +58,7 @@ export class Algorithm {
         this.clearQueue();
         const alg = this.algorithms.indexOf(algorithm);
 
-        switch(alg) {
+        switch (alg) {
             case 0:
                 this.BFS();
                 break;
@@ -78,27 +78,27 @@ export class Algorithm {
 
     distance(node1, node2) {
         const distance = Math.sqrt(
-          Math.pow(node1.row - node2.row, 2)
-          +
-          Math.pow(node1.col - node2.col, 2)
+            Math.pow(node1.row - node2.row, 2)
+            +
+            Math.pow(node1.col - node2.col, 2)
         );
         return distance;
     }
 
     // algs added here
     BFS() {
-        while(this.queue.length) {
+        while (this.queue.length) {
             const currentNode = this.queue.shift();
             if (currentNode.type === "wall") continue;
 
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
-        
+
             if (currentNode.type === 'end') {
                 this.buildPath(currentNode);
                 break;
             }
-        
+
             const neighbors = currentNode.neighbors;
             for (const neighbor of neighbors) {
                 if (neighbor.type === "wall") {
@@ -114,18 +114,18 @@ export class Algorithm {
     }
 
     DFS() {
-        while(this.queue.length) {
+        while (this.queue.length) {
             const currentNode = this.queue.pop();
             if (currentNode.type === "wall") continue;
-  
+
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
-        
+
             if (currentNode.type === 'end') {
                 this.buildPath(currentNode);
                 break;
             }
-        
+
             const neighbors = currentNode.neighbors;
             for (const neighbor of neighbors) {
                 if (neighbor.type === "wall") {
@@ -138,43 +138,48 @@ export class Algorithm {
                 }
             }
         };
-      }
+    }
 
-      Astar() {
+    Astar() {
         let pqueue = new PriorityQueue()
         let gcosts = new BetterMap()
 
-        while(this.queue.length) {
+        while (this.queue.length) {
             const node = this.queue.shift();
             const an = new AStarNode(node, this.distance(node, this.endNode), 0);
             pqueue.enqueue([an, an.getCost()]);
             gcosts.set(node, 0)
         }
 
-        while(pqueue.size()) {
+        while (pqueue.size()) {
             const currentAStarNode = pqueue.dequeue();
             const currentNode = currentAStarNode.node;
             if (currentNode.type === "wall") continue;
 
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
-        
+
             if (currentNode.type === 'end') {
                 this.buildPath(currentNode);
                 break;
             }
-        
+
             const neighbors = currentNode.neighbors
-            for(const neighbor of neighbors) {
+            for (const neighbor of neighbors) {
                 if (neighbor.type === "wall") {
                     continue;
                 }
 
                 const newNeighbors = neighbor.neighbors;
                 let newGCost = currentAStarNode.gcost + 1;
-                for(const newNeighbor of newNeighbors) {
+                let newParent = currentNode;
+                for (const newNeighbor of newNeighbors) {
                     const cost = gcosts.getOrElse(newNeighbor, Infinity);
-                    newGCost = Math.min(newGCost, cost + 1);
+                    const newCost = Math.min(newGCost, cost + 1);
+                    if (newCost != newGCost) {
+                        newGCost = newCost;
+                        newParent = newNeighbor;
+                    }
                 }
 
                 if (!this.visited.has(neighbor)) {
@@ -187,35 +192,35 @@ export class Algorithm {
         }
     }
 
-      DijkstrasAlgorithm() {
+    DijkstrasAlgorithm() {
         // Initialize the distance from the source node to itself as 0.
         const distances = new Map();
         distances.set(this.startNode, 0);
-        
+
         while (!this.priorityQueue.isEmpty()) {
             // Extract the node with the smallest distance from the priority queue.
             const currentNode = this.priorityQueue.dequeue();
-    
+
             // If this node has already been visited, skip it.
             if (this.visited.has(currentNode)) continue;
-    
+
             // Mark the node as visited.
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
-            
+
             if (currentNode.type === 'end') {
-                this.buildPath(currentNode); 
+                this.buildPath(currentNode);
                 break;
             }
-            
+
             // Visit neighbors and update distances if a shorter path is found.
             for (const neighbor of currentNode.neighbors) {
                 if (neighbor.type === "wall") {
                     continue;
                 }
                 // Calculate the new distance from the source to the neighbor through the current node.
-                const newDistance = distances.get(currentNode) + neighbor.weight; 
-    
+                const newDistance = distances.get(currentNode) + neighbor.weight;
+
                 // If the new distance is shorter, update the distance and parent information.
                 if (!distances.has(neighbor) || newDistance < distances.get(neighbor)) {
                     distances.set(neighbor, newDistance);
@@ -236,48 +241,48 @@ class VisualNode {
 
 class PriorityQueue {
     constructor() {
-      this.items = [];
+        this.items = [];
     }
-  
+
     enqueue(item) {
-      const priority = item[1];
-      let added = false;
-  
-      for (let i = 0; i < this.items.length; i++) {
-        if (priority < this.items[i][1]) {
-          this.items.splice(i, 0, item);
-          added = true;
-          break;
+        const priority = item[1];
+        let added = false;
+
+        for (let i = 0; i < this.items.length; i++) {
+            if (priority < this.items[i][1]) {
+                this.items.splice(i, 0, item);
+                added = true;
+                break;
+            }
         }
-      }
-  
-      if (!added) {
-        this.items.push(item);
-      }
+
+        if (!added) {
+            this.items.push(item);
+        }
     }
-  
+
     dequeue() {
-      if (this.isEmpty()) {
-        return null;
-      }
-      return this.items.shift()[0];
+        if (this.isEmpty()) {
+            return null;
+        }
+        return this.items.shift()[0];
     }
-  
+
     front() {
-      if (this.isEmpty()) {
-        return null;
-      }
-      return this.items[0][0];
+        if (this.isEmpty()) {
+            return null;
+        }
+        return this.items[0][0];
     }
-  
+
     isEmpty() {
-      return this.items.length === 0;
+        return this.items.length === 0;
     }
-  
+
     size() {
-      return this.items.length;
+        return this.items.length;
     }
-  }
+}
 
 class AStarNode {
     constructor(node, f, g) {
@@ -302,7 +307,7 @@ class BetterMap {
 
     getOrElse(a, b) {
         const get = this.map.get(a);
-        if(get === undefined) {
+        if (get === undefined) {
             return b;
         }
         return get;
