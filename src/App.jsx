@@ -38,16 +38,21 @@ function DroppableNode({ node, onDrop, onClick  }) {
   });
 
   return (
-    <div ref={ref} className={`node ${node.type}`} onClick={onClick}>
+    <div ref={ref} className={`node ${node.isCheckpoint ? 'checkpoint' : node.type}`} onClick={onClick}>
       {node.weight > 1 ? node.weight : ""}
     </div>
   );
 }
 
 function clearGridKeepStartAndEnd(grid) {
+  const keepTypes = [
+    "start",
+    "end",
+    "wall"
+  ];
   for (let row of grid.nodes) {
     for (let node of row) {
-      if (node.type !== "start" && node.type !== "end" && node.type !== "wall") { // Preserve wall nodes
+      if (keepTypes.indexOf(node.type) < 0) { // Preserve wall nodes
         node.clear();
       }
     }
@@ -59,9 +64,9 @@ export default function App() {
   const timeoutRef = useRef(null); // for time outs
   const [speed, setSpeed] = useState(100); // for speed control slider
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
-  const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*"];
+  const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*", "Weighted A*"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
-  const nodeOptions = ['Add Walls', 'Remove ALL Walls', 'Select Obstacle Remover', 'Increase Node Weight', 'Decrease Node Weight', 'Reset All Weights'];
+  const nodeOptions = ['Add Walls', 'Add Checkpoint', 'Increase Node Weight', 'Decrease Node Weight', 'Select Obstacle Remover', 'Remove ALL Walls', 'Reset All Weights'];
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
   const [actionMode, setActionMode] = useState('');
   const [dragging, setDragging] = useState(false);
@@ -84,24 +89,29 @@ export default function App() {
 
   const handleNodeOptionChange = (nodeOption) => {
     setSelectedNodeOption(nodeOption);
-
-    if (nodeOption === 'Add Walls') {
-      setActionMode('addWalls');
-    } 
-    else if(nodeOption === 'Select Obstacle Remover') {
-      setActionMode('clearNode');
-    }
-    else if(nodeOption === 'Increase Node Weight') {
-      setActionMode('increaseWeight');
-    }
-    else if(nodeOption === 'Decrease Node Weight') {
-      setActionMode('decreaseWeight');
-    }
-    else if(nodeOption === 'Reset All Weights') {
-      handleClearWeightsClick();
-    }
-    else if(nodeOption === 'Remove ALL Walls'){
-      handleClearWallsClick();
+    switch(nodeOption) {
+      default:
+      case 'Add Walls':
+        setActionMode('addWalls');
+        break;
+      case 'Select Obstacle Remover':
+        setActionMode('clearNode');
+        break;
+      case 'Increase Node Weight':
+        setActionMode('increaseWeight');
+        break;
+      case 'Decrease Node Weight':
+        setActionMode('decreaseWeight');
+        break;
+      case 'Reset All Weights':
+        handleClearWeightsClick();
+        break;
+      case 'Remove ALL Walls':
+        handleClearWallsClick();
+        break;
+      case 'Add Checkpoint':
+        setActionMode('addCheckpoint');
+        break;
     }
   };
 
@@ -137,6 +147,10 @@ export default function App() {
               node.weight -= 1;
           }
           break;
+      case 'addCheckpoint':
+        if (node.type !== 'start' && node.type !== 'end') {
+          node.setCheckpoint(true);
+        }
       default:
           break;
     }
@@ -215,12 +229,29 @@ export default function App() {
   };
 
   const step = () => {
+    const cantReplace = [
+      "start",
+      "end",
+      "path"
+    ];
     if(alg.visualQueue.length > 0) {
       const visualNode = alg.visualQueue.shift();
-      if(!(["start", "end"].indexOf(visualNode.node.type) + 1)) {
+      if(visualNode.type == "path") {
+        removeVisitedNodes();
+      }
+
+      if(cantReplace.indexOf(visualNode.node.type) == -1) {
         visualNode.node.updateType(visualNode.type);
       }
       setGrid({...grid});
+    }
+  };
+
+  const removeVisitedNodes = () => {
+    for(let row of grid.nodes) {
+      for(let node of row) {
+        node.updateType(((node.type == 'visited')? "": node.type));
+      }
     }
   };
 
@@ -305,7 +336,11 @@ export default function App() {
             <div key={rowIndex} className="row">
             {row.map((node, nodeIndex) => {
                 // If it's a start or end node, return them wrapped in DraggableNode.
-                if (node.type === 'start' || node.type === 'end') {
+                const draggable = [
+                  "start",
+                  "end"
+                ];
+                if (draggable.indexOf(node.type) >= 0) {
                     return (
                         <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
                     );
