@@ -4,7 +4,7 @@ export class Algorithm {
 
         this.startNode = this.getNodes("start")[0];
         this.endNode = this.getNodes("end")[0];
-        this.checkpoints = this.getNodes("checkpoint");
+        this.checkpoints = this.getCheckpoints();
 
         this.priorityQueue = new PriorityQueue();
         this.priorityQueue.enqueue([this.startNode, 0]);
@@ -20,19 +20,9 @@ export class Algorithm {
 
     isObstacle(node) {
         const obstacles = [
-            "wall",
-            "checkpoint"
+            "wall"
         ];
         return obstacles.indexOf(node.type) >= 0;
-    }
-
-    clearQueue() {
-        //allows for multistart by taking all start nodes, not sure how that would look
-        this.queue = this.getNodes("start");
-        this.visited = new Set();
-        this.parents = new Map();
-
-        this.visualQueue = [];
     }
 
     getNodes(type) {
@@ -40,6 +30,18 @@ export class Algorithm {
         for (let row of this.grid.nodes) {
             for (let node of row) {
                 if (node.type === type) {
+                    output.push(node)
+                }
+            }
+        }
+        return output;
+    }
+
+    getCheckpoints() {
+        let output = [];
+        for (let row of this.grid.nodes) {
+            for (let node of row) {
+                if (node.isCheckpoint) {
                     output.push(node)
                 }
             }
@@ -64,9 +66,39 @@ export class Algorithm {
     }
 
     run(algorithm) {
-        this.clearQueue();
-        const alg = this.algorithms.indexOf(algorithm);
+        let checkpointsInOrder = this.getCheckpointOrder();
+        let runs = this.getRuns([this.startNode, this.endNode], checkpointsInOrder);
 
+        this.visualQueue = [];
+        while(runs.length) {
+            const currentRun = runs.shift();
+            this.startNode = currentRun[0];
+            this.endNode = currentRun[1];
+
+            this.queue = [this.startNode];
+            this.visited = new Set();
+            this.parents = new Map();
+
+            this.runCase(algorithm);
+        }
+    }
+
+    getRuns(original, checkpoints) {
+        original.splice(1, 0, ...checkpoints);
+        let output = [];
+
+        for (let i = 1; i < original.length; i++) {
+            output.push([
+                original[i - 1],
+                original[i]
+            ]);
+        }
+        
+        return output;
+    }
+
+    runCase(algorithm) {
+        const alg = this.algorithms.indexOf(algorithm);
         switch (alg) {
             default:
             case 0:
@@ -87,6 +119,30 @@ export class Algorithm {
         }
     }
 
+    getCheckpointOrder() {
+        let checkpoints = [...this.checkpoints];
+        let sorted = [];
+        let sorter = new PriorityQueue();
+
+        let current = this.startNode;
+        while(checkpoints.length) {
+            for(const cp of checkpoints) {
+                sorter.enqueue([cp, this.distance(current, cp)]);
+            }
+
+            const closestNodeIndex = checkpoints.indexOf(sorter.dequeue());
+            const closestNode = checkpoints[closestNodeIndex];
+            
+            current = closestNode;
+            sorted.push(closestNode);
+            
+            checkpoints.splice(closestNodeIndex, 1);
+            sorter = new PriorityQueue()
+        }
+
+        return sorted;
+    }
+
     distance(node1, node2) {
         const distance = Math.sqrt(
             Math.pow(node1.row - node2.row, 2)
@@ -105,7 +161,7 @@ export class Algorithm {
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
 
-            if (currentNode.type === 'end') {
+            if (currentNode.equalTo(this.endNode)) {
                 this.buildPath(currentNode);
                 break;
             }
@@ -130,7 +186,7 @@ export class Algorithm {
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
 
-            if (currentNode.type === 'end') {
+            if (currentNode.equalTo(this.endNode)) {
                 this.buildPath(currentNode);
                 break;
             }
@@ -166,7 +222,7 @@ export class Algorithm {
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
 
-            if (currentNode.type === 'end') {
+            if (currentNode.equalTo(this.endNode)) {
                 this.buildPath(currentNode);
                 break;
             }
@@ -213,7 +269,7 @@ export class Algorithm {
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
 
-            if (currentNode.type === 'end') {
+            if (currentNode.equalTo(this.endNode)) {
                 this.buildPath(currentNode);
                 break;
             }
@@ -254,7 +310,7 @@ export class Algorithm {
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
 
-            if (currentNode.type === 'end') {
+            if (currentNode.equalTo(this.endNode)) {
                 this.buildPath(currentNode);
                 break;
             }
