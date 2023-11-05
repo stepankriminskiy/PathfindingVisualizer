@@ -127,7 +127,7 @@ export class Algorithm {
         let current = this.startNode;
         while(checkpoints.length) {
             for(const cp of checkpoints) {
-                sorter.enqueue([cp, this.distance(current, cp)]);
+                sorter.enqueue([cp, this.nodeDistance(current, cp)]);
             }
 
             const closestNodeIndex = checkpoints.indexOf(sorter.dequeue());
@@ -150,6 +150,35 @@ export class Algorithm {
             Math.pow(node1.col - node2.col, 2)
         );
         return distance;
+    }
+
+    nodeDistance(node1, node2) {
+        let queue = [[node1, 0]];
+        let visited = new Set();
+        let parents = new Map();
+
+        let dequeue;
+        while(queue.length) {
+            dequeue = queue.shift();
+            const currentNode = dequeue[0];
+            const depth = dequeue[1]
+
+            if(this.isObstacle(currentNode)) continue;
+
+            visited.add(currentNode);
+
+            if(currentNode.equalTo(node2)) break;
+
+            const neighbors = currentNode.neighbors;
+            for(const neighbor of neighbors) {
+                if(this.isObstacle(neighbor)) continue;
+                if(!visited.has(neighbor)) {
+                    queue.push([neighbor, depth + 1]);
+                    visited.add(neighbor);
+                }
+            }
+        }
+        return dequeue[1];
     }
 
     // algs added here
