@@ -177,3 +177,18 @@ main {
   background-color: #007bff; /* Highlight the selected item */
   color: white;
 }
+.obstacle-adder-cursor {
+  cursor: crosshair;
+}
+.obstacle-remover-cursor {
+  cursor: not-allowed;
+}
+.checkpoint-cursor {
+  cursor: url('./png/checkpoint.png'), crosshair;
+}
+.minus-cursor {
+  cursor: zoom-out;
+}
+.plus-cursor {
+  cursor: zoom-in;
+}

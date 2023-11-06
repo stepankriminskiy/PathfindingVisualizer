@@ -86,6 +86,25 @@ export default function App() {
     setSelectedAlgorithm(algorithm);
   };
 
+  const getCursorClassName = () => {
+    if(actionMode === 'clearNode'){
+      return 'obstacle-remover-cursor';
+    }
+    if(actionMode === 'addCheckpoint'){
+      return 'checkpoint-cursor';
+    }
+    if(actionMode === 'increaseWeight'){
+      return 'plus-cursor';
+    }    
+    if(actionMode === 'addWalls'){
+      return 'obstacle-adder-cursor';
+    }
+    if(actionMode === 'decreaseWeight'){
+      return 'minus-cursor';
+    }
+
+    return '';
+  };
 
   const handleNodeOptionChange = (nodeOption) => {
     setSelectedNodeOption(nodeOption);
@@ -271,6 +290,7 @@ export default function App() {
   };
 
   return (
+    
       <DndProvider backend={HTML5Backend}>
         <main>
           <header className="toolbar">
@@ -331,7 +351,7 @@ export default function App() {
               </div>
             </div>
           </header>
-          <div className="grid-container">
+          <div className={`grid-container ${getCursorClassName()}`}>
           {grid && grid.nodes.map((row, rowIndex) => (
             <div key={rowIndex} className="row">
             {row.map((node, nodeIndex) => {
@@ -361,5 +381,6 @@ export default function App() {
           </div>
         </main>
       </DndProvider>
+
   );
 } 
