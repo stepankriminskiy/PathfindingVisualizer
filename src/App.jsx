@@ -337,7 +337,6 @@ export default function App() {
                           <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
                       );
                     }
-                    // For all other nodes, return them wrapped in DroppableNode.
                     else {
                       return (
                           <DroppableNode
