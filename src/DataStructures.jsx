@@ -4,7 +4,8 @@ export class Node {
     this.col = col;
     this.type = '';
     this.neighbors = []; // Neighbors of the node
-    this.weight = 1
+    this.weight = 1;
+    this.isCheckpoint = false;
 
     // Default type is an empty string
     // Other properties like isStart, isEnd, isVisited, etc.
@@ -37,6 +38,14 @@ export class Node {
   // Other methods for node operations, e.g., clearType, etc.
   clear() {
     this.updateType("");
+  }
+
+  setCheckpoint(bool) {
+    this.isCheckpoint = bool;
+  }
+
+  equalTo(node) {
+    return this.row == node.row && this.col == node.col;
   }
 }
 
