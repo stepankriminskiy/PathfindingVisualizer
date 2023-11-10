@@ -32,7 +32,7 @@ function DraggableNode({ node, onDragEnd }) {
 
 // Droppable Node
 // Droppable Node
-function DroppableNode({ node, onDrop, onMouseDown, onMouseUp, onMouseEnter }) {
+function DroppableNode({ node, onDrop, onMouseDown, onMouseUp, onMouseEnter, onClick}) {
   const [, ref] = useDrop({
     accept: 'NODE',
     drop: () => ({ row: node.row, col: node.col }),
@@ -45,6 +45,7 @@ function DroppableNode({ node, onDrop, onMouseDown, onMouseUp, onMouseEnter }) {
           onMouseDown={() => onMouseDown(node.row, node.col)}
           onMouseUp={onMouseUp}
           onMouseEnter={() => onMouseEnter(node.row, node.col)}
+          onClick={onClick}
       >
         {node.weight > 1 ? node.weight : ""}
       </div>
@@ -345,6 +346,7 @@ export default function App() {
                               onMouseDown={handleMouseDown}
                               onMouseUp={handleMouseUp}
                               onMouseEnter={handleMouseEnter}
+                              onClick={() => handleDroppableNodeClick(node.row, node.col)}
                           />
                       );
                     }
