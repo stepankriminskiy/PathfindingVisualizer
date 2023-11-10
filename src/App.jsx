@@ -408,35 +408,36 @@ export default function App() {
               </div>
             </div>
           </header>
-          <div className="grid-container">
-            {grid && grid.nodes.map((row, rowIndex) => (
-                <div key={rowIndex} className="row">
-                  {row.map((node, nodeIndex) => {
-                    // If it's a start or end node, return them wrapped in DraggableNode.
-                    const draggable = [
-                      "start",
-                      "end"
-                    ];
-                    if (draggable.indexOf(node.type) >= 0) {
-                      return (
-                          <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
-                      );
-                    }
-                    else {
-                      return (
-                          <DroppableNode
-                              key={nodeIndex}
-                              node={node}
-                              onMouseDown={handleMouseDown}
-                              onMouseUp={handleMouseUp}
-                              onMouseEnter={handleMouseEnter}
-                              onClick={() => handleDroppableNodeClick(node.row, node.col)}
-                          />
-                      );
-                    }
-                  })}
-                </div>
-            ))}
+          <div className={`grid-container ${getCursorClassName()}`}>
+          {grid && grid.nodes.map((row, rowIndex) => (
+            <div key={rowIndex} className="row">
+            {row.map((node, nodeIndex) => {
+                // If it's a start or end node, return them wrapped in DraggableNode.
+                const draggable = [
+                  "start",
+                  "end"
+                ];
+                if (draggable.indexOf(node.type) >= 0) {
+                    return (
+                        <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
+                    );
+                } 
+                // For all other nodes, return them wrapped in DroppableNode.
+                else {
+                    return (
+                        <DroppableNode 
+                        key={nodeIndex}
+                        node={node}
+                        onMouseDown={handleMouseDown}
+                        onMouseUp={handleMouseUp}
+                        onMouseEnter={handleMouseEnter}
+                        onClick={() => handleDroppableNodeClick(node.row, node.col)}
+                        />
+                    );
+                }
+            })}
+        </div>
+        ))}
           </div>
         </main>
       </DndProvider>
