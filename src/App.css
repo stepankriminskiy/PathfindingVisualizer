@@ -173,3 +173,15 @@ main {
   background-color: #007bff; /* Highlight the selected item */
   color: white;
 }
+
+.NoPathButton {
+  background-color: red;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+.NoPathButton:hover {
+  background-color: red;
+}

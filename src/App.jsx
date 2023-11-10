@@ -239,6 +239,12 @@ export default function App() {
     step();
   };
 
+  const handleNoPathButtonClick = () => {
+    // Handle the button click event here
+    // You can add the logic to display a message or perform any other action
+    console.log('No Path Found button clicked!');
+  };
+
   return (
       <DndProvider backend={HTML5Backend}>
         <main>
@@ -301,6 +307,9 @@ export default function App() {
             </div>
           </header>
           <div className="grid-container">
+            <div className="Button NoPathButton" onClick={handleNoPathButtonClick}>
+              No Path Found
+            </div>
           {grid && grid.nodes.map((row, rowIndex) => (
             <div key={rowIndex} className="row">
             {row.map((node, nodeIndex) => {
