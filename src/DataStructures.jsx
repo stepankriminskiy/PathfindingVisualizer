@@ -90,8 +90,8 @@ export class Grid {
       }
     }
     
-    this.nodes[0][0].setAsStart(); // Top-left corner for start
-    this.nodes[rows - 1][columns - 1].setAsEnd(); // Bottom-right corner for end
+    this.nodes[7][1].setAsStart(); // Top-left corner for start
+    this.nodes[rows - 8][columns - 2].setAsEnd(); // Bottom-right corner for end
   }
   
   setNeighbors(node) {

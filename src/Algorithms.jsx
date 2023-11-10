@@ -191,6 +191,7 @@ export class Algorithm {
             this.visited.add(currentNode);
 
             if (currentNode.equalTo(this.endNode)) {
+                this.calculateClassesForGradient();
                 this.buildPath(currentNode);
                 break;
             }
@@ -206,6 +207,23 @@ export class Algorithm {
             }
         };
     }
+        
+calculateClassesForGradient() {
+    let stepSize = Math.ceil(this.visualQueue.length / 40);
+    let currentStep = 0;
+  if(this.checkpoints == 0){
+    for (let i = 0; i < this.visualQueue.length; i++) {
+      if (i % stepSize === 0 && currentStep < 40) {
+        currentStep++;
+      }
+    
+    let className = `node-visited-${currentStep}`;
+      
+    this.visualQueue[i].type = className; 
+      
+    }
+}
+  }
 
     DFS() {
         while (this.queue.length) {
@@ -216,6 +234,7 @@ export class Algorithm {
             this.visited.add(currentNode);
 
             if (currentNode.equalTo(this.endNode)) {
+                this.calculateClassesForGradient();
                 this.buildPath(currentNode);
                 break;
             }
@@ -252,6 +271,7 @@ export class Algorithm {
             this.visited.add(currentNode);
 
             if (currentNode.equalTo(this.endNode)) {
+                this.calculateClassesForGradient();
                 this.buildPath(currentNode);
                 break;
             }
@@ -299,6 +319,7 @@ export class Algorithm {
             this.visited.add(currentNode);
 
             if (currentNode.equalTo(this.endNode)) {
+                this.calculateClassesForGradient();
                 this.buildPath(currentNode);
                 break;
             }
@@ -340,6 +361,7 @@ export class Algorithm {
             this.visited.add(currentNode);
 
             if (currentNode.equalTo(this.endNode)) {
+                this.calculateClassesForGradient();
                 this.buildPath(currentNode);
                 break;
             }
