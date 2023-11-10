@@ -187,7 +187,7 @@ export class Algorithm {
     }
 
     noPath() {
-        return "No path exists."
+        console.log("no path.")
     }
 
     // algs added here
@@ -215,7 +215,7 @@ export class Algorithm {
                 }
             }
         };
-        return this.noPath();
+        this.noPath();
     }
 
     DFS() {
@@ -242,7 +242,7 @@ export class Algorithm {
                 }
             }
         };
-        return this.noPath();
+        this.noPath();
       }
 
     Astar() {
@@ -293,7 +293,7 @@ export class Algorithm {
                 }
             }
         }
-        return this.noPath()
+        this.noPath()
     }
 
       DijkstrasAlgorithm() {
@@ -329,7 +329,7 @@ export class Algorithm {
                 }
             }
         }
-        return this.noPath();
+        this.noPath();
     }
     
     WeigtedAstar() {
@@ -380,6 +380,6 @@ export class Algorithm {
                 }
             }
         }
-        return this.noPath()
+        this.noPath()
     }
 }
