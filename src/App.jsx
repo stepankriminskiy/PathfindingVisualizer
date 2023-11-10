@@ -3,8 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useDrag, useDrop } from 'react-dnd';
-import { Node, Obstacle, Grid } from './DataStructures';
+import { Grid } from './DataStructures';
 import { Algorithm } from './Algorithms';
+import { Maze } from './Mazes'
 
 const TOTAL_ROWS = 15;  // Adjust as needed
 const TOTAL_COLS = 30;
@@ -12,6 +13,7 @@ const TOTAL_COLS = 30;
 // visualization controls
 let paused = true;
 let alg = null;
+let maze = null;
 
 function DraggableNode({ node, onDragEnd }) {
   const [, ref] = useDrag({
@@ -51,6 +53,7 @@ function DroppableNode({ node, onDrop, onMouseDown, onMouseUp, onMouseEnter, onC
   );
 }
 
+
 function clearGridKeepStartAndEnd(grid) {
   const keepTypes = [
     "start",
@@ -72,6 +75,7 @@ export default function App() {
   const [speed, setSpeed] = useState(100); // for speed control slider
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
   const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*", "Weighted A*"];
+  const mazes = ["Random", "Maze"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
   const nodeOptions = ['Add Walls', 'Add Checkpoint', 'Increase Node Weight', 'Decrease Node Weight', 'Select Obstacle Remover', 'Remove ALL Walls', 'Reset All Weights'];
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
@@ -111,6 +115,10 @@ export default function App() {
   const handleAlgorithmChange = (algorithm) => {
     setSelectedAlgorithm(algorithm);
   };
+
+  const handleMazeClick = (maze) => {
+    RunMaze(maze)
+  }
 
   const getCursorClassName = () => {
     if(actionMode === 'clearNode'){
@@ -266,6 +274,13 @@ export default function App() {
     }
   };
 
+  const RunMaze = (maze_type) => {
+    maze = new Maze(grid, mazes);
+    
+    handleClearWallsClick();
+    maze.run(maze_type);
+  }
+
   const visualize = () => {
     if(!paused) {
         step();
@@ -338,6 +353,22 @@ export default function App() {
             </div>
             <div className="Dropdown">
               <div className="DropdownButton">
+                Mazes
+                <div className="DropdownContent">
+                  {mazes.map((maze, index) => (
+                      <div
+                          key={index}
+                          className={`DropdownItem`}
+                          onClick={() => handleMazeClick(maze)}
+                      >
+                        {maze}
+                      </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="Dropdown">
+              <div className="DropdownButton">
                 Node Options
                 <div className="DropdownContent">
                   {nodeOptions.map((nodeOption, index) => (
@@ -378,34 +409,37 @@ export default function App() {
             </div>
           </header>
           <div className={`grid-container ${getCursorClassName()}`}>
-            {grid && grid.nodes.map((row, rowIndex) => (
-                <div key={rowIndex} className="row">
-                  {row.map((node, nodeIndex) => {
-                    // If it's a start or end node, return them wrapped in DraggableNode.
-                    if (node.type === 'start' || node.type === 'end') {
-                      return (
-                          <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
-                      );
-                    }
-                    // For all other nodes, return them wrapped in DroppableNode.
-                    else {
-                      return (
-                          <DroppableNode
-                              key={nodeIndex}
-                              node={node}
-                              onMouseDown={handleMouseDown}
-                              onMouseUp={handleMouseUp}
-                              onMouseEnter={handleMouseEnter}
-                              onClick={() => handleDroppableNodeClick(node.row, node.col)}
-                          />
-                      );
-                    }
-                  })}
-                </div>
-            ))}
+          {grid && grid.nodes.map((row, rowIndex) => (
+            <div key={rowIndex} className="row">
+            {row.map((node, nodeIndex) => {
+                // If it's a start or end node, return them wrapped in DraggableNode.
+                const draggable = [
+                  "start",
+                  "end"
+                ];
+                if (draggable.indexOf(node.type) >= 0) {
+                    return (
+                        <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
+                    );
+                } 
+                // For all other nodes, return them wrapped in DroppableNode.
+                else {
+                    return (
+                        <DroppableNode 
+                        key={nodeIndex}
+                        node={node}
+                        onMouseDown={handleMouseDown}
+                        onMouseUp={handleMouseUp}
+                        onMouseEnter={handleMouseEnter}
+                        onClick={() => handleDroppableNodeClick(node.row, node.col)}
+                        />
+                    );
+                }
+            })}
+        </div>
+        ))}
           </div>
         </main>
       </DndProvider>
-
   );
 } 
