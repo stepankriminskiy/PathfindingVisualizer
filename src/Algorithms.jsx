@@ -1,3 +1,5 @@
+import { PriorityQueue, VisualNode, BetterMap, AStarNode } from "./DataStructures";
+
 export class Algorithm {
     constructor(grid, algorithms) {
         this.grid = grid;
@@ -184,6 +186,10 @@ export class Algorithm {
         return dequeue[1];
     }
 
+    noPath() {
+        return "No path exists."
+    }
+
     // algs added here
     BFS() {
         while (this.queue.length) {
@@ -201,7 +207,7 @@ export class Algorithm {
             const neighbors = currentNode.neighbors;
             for (const neighbor of neighbors) {
                 if (this.isObstacle(neighbor)) continue;
-                if (!this.visited.has(neighbor)) {
+                if (!this.hasBeenVisited(neighbor)) {
                     this.queue.push(neighbor);
                     this.visited.add(neighbor);
                     this.parents.set(neighbor, currentNode);
@@ -209,7 +215,7 @@ export class Algorithm {
                 }
             }
         };
-        return "No path exists.";
+        return this.noPath();
     }
 
     DFS() {
@@ -228,7 +234,7 @@ export class Algorithm {
             const neighbors = currentNode.neighbors;
             for (const neighbor of neighbors) {
                 if (this.isObstacle(neighbor)) continue;
-                if (!this.visited.has(neighbor)) {
+                if (!this.hasBeenVisited(neighbor)) {
                     this.queue.push(neighbor);
                     this.visited.add(neighbor);
                     this.parents.set(neighbor, currentNode);
@@ -236,7 +242,7 @@ export class Algorithm {
                 }
             }
         };
-        return "No path exists.";
+        return this.noPath();
       }
 
     Astar() {
@@ -279,7 +285,7 @@ export class Algorithm {
                     }
                 }
 
-                if (!this.visited.has(neighbor)) {
+                if (!this.hasBeenVisited(neighbor)) {
                     const an = new AStarNode(neighbor, this.distance(neighbor, this.endNode), newGCost);
                     pqueue.enqueue([an, an.getCost()]);
                     this.visited.add(neighbor);
@@ -287,6 +293,7 @@ export class Algorithm {
                 }
             }
         }
+        return this.noPath()
     }
 
       DijkstrasAlgorithm() {
@@ -296,7 +303,7 @@ export class Algorithm {
             const currentNode = this.priorityQueue.dequeue();
 
             // If this node has already been visited, skip it.
-            if (this.visited.has(currentNode)) continue;
+            if (this.hasBeenVisited(currentNode)) continue;
 
             // Mark the node as visited.
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
@@ -322,7 +329,7 @@ export class Algorithm {
                 }
             }
         }
-        return "No path exists.";
+        return this.noPath();
     }
     
     WeigtedAstar() {
@@ -365,7 +372,7 @@ export class Algorithm {
                     }
                 }
 
-                if (!this.visited.has(neighbor)) {
+                if (!this.hasBeenVisited(neighbor)) {
                     const an = new AStarNode(neighbor, this.distance(neighbor, this.endNode), newGCost);
                     pqueue.enqueue([an, an.getCost()]);
                     this.visited.add(neighbor);
@@ -373,87 +380,6 @@ export class Algorithm {
                 }
             }
         }
-    }
-}
-
-class VisualNode {
-    constructor(node, type) {
-        this.node = node;
-        this.type = type;
-    }
-}
-
-class PriorityQueue {
-    constructor() {
-        this.items = [];
-    }
-
-    enqueue(item) {
-        const priority = item[1];
-        let added = false;
-
-        for (let i = 0; i < this.items.length; i++) {
-            if (priority < this.items[i][1]) {
-                this.items.splice(i, 0, item);
-                added = true;
-                break;
-            }
-        }
-
-        if (!added) {
-            this.items.push(item);
-        }
-    }
-
-    dequeue() {
-        if (this.isEmpty()) {
-            return null;
-        }
-        return this.items.shift()[0];
-    }
-
-    front() {
-        if (this.isEmpty()) {
-            return null;
-        }
-        return this.items[0][0];
-    }
-
-    isEmpty() {
-        return this.items.length === 0;
-    }
-
-    size() {
-        return this.items.length;
-    }
-}
-
-class AStarNode {
-    constructor(node, f, g) {
-        this.node = node;
-        this.fcost = f;
-        this.gcost = g;
-    }
-
-    getCost() {
-        return this.fcost + this.gcost;
-    }
-}
-
-class BetterMap {
-    constructor() {
-        this.map = new Map()
-    }
-
-    set(a, b) {
-        this.map.set(a, b)
-    }
-
-    getOrElse(a, b) {
-        const get = this.map.get(a);
-        if (get === undefined) {
-            return b;
-        }
-        return get;
+        return this.noPath()
     }
 }

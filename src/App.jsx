@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useDrag, useDrop } from 'react-dnd';
-import { Node, Obstacle, Grid } from './DataStructures';
+import { Grid } from './DataStructures';
 import { Algorithm } from './Algorithms';
 
 const TOTAL_ROWS = 15;  // Adjust as needed
@@ -30,7 +30,6 @@ function DraggableNode({ node, onDragEnd }) {
   );
 }
 
-// Droppable Node
 // Droppable Node
 function DroppableNode({ node, onDrop, onMouseDown, onMouseUp, onMouseEnter, onClick}) {
   const [, ref] = useDrop({
@@ -74,6 +73,8 @@ export default function App() {
   const [speed, setSpeed] = useState(100); // for speed control slider
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
   const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*", "Weighted A*"];
+  const [selectedMaze, setSelectedMaze] = useState('Select Maze');
+  const mazes = ["Random", "Maze"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
   const nodeOptions = ['Add Walls', 'Add Checkpoint', 'Increase Node Weight', 'Decrease Node Weight', 'Select Obstacle Remover', 'Remove ALL Walls', 'Reset All Weights'];
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
@@ -113,6 +114,11 @@ export default function App() {
   const handleAlgorithmChange = (algorithm) => {
     setSelectedAlgorithm(algorithm);
   };
+
+  const handleMazeChange = (maze) => {
+    handleClearWallsClick()
+    setSelectedMaze(maze);
+  }
 
   const getCursorClassName = () => {
     if(actionMode === 'clearNode'){
@@ -333,6 +339,22 @@ export default function App() {
                           onClick={() => handleAlgorithmChange(algorithm)}
                       >
                         {algorithm}
+                      </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="Dropdown">
+              <div className="DropdownButton">
+                Mazes
+                <div className="DropdownContent">
+                  {mazes.map((maze, index) => (
+                      <div
+                          key={index}
+                          className={`DropdownItem ${selectedMaze === maze ? 'Selected' : ''}`}
+                          onClick={() => handleMazeChange(maze)}
+                      >
+                        {maze}
                       </div>
                   ))}
                 </div>
