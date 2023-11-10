@@ -12,11 +12,13 @@ export class Maze {
     }
 
     isObstacle(node) {
-        const obstacles = [
-            "start",
-            "end"
-        ];
-        return obstacles.indexOf(node.type) >= 0;
+        const not_obstacles = [
+            "",
+            "wall",
+            "path",
+            "visited"
+        ]
+        return not_obstacles.indexOf(node.type) == -1;
     }
 
     getNodes(type) {
@@ -86,6 +88,48 @@ export class Maze {
         return dequeue[1];
     }
 
+    getNeighboringPaths(node) {
+        const x = node.col;
+        const y = node.row;
+        const nodes = this.grid.nodes
+
+        const paths = [
+            (y + 2 < this.grid.rows) ? [
+                nodes[y + 2][x],
+                nodes[y + 1][x]
+            ] : undefined,
+            (y - 2 >= 0) ? [
+                nodes[y - 2][x],
+                nodes[y - 1][x]    
+            ] : undefined,
+            (x + 2 < this.grid.columns) ? [
+                nodes[y][x + 2],
+                nodes[y][x + 1]
+            ] : undefined,
+            (x - 2 >= 0) ? [
+                nodes[y][x - 2],
+                nodes[y][x - 1]  
+            ] : undefined
+        ];
+        let output = [];
+        for (const path of paths) {
+            if (path != undefined) {
+                output.push(path)
+            }
+        }
+        return output;
+    }
+
+    setAllWall() {
+        for (let row of this.grid.nodes) {
+            for (let node of row) {
+                if(!this.isObstacle(node)) {
+                    node.setAsWall()
+                }
+            }
+        }
+    }
+
     // algs added here
     Random() {
         for (let row of this.grid.nodes) {
@@ -100,6 +144,37 @@ export class Maze {
     }
 
     Maze() {
-        
+        this.setAllWall();
+        this.queue = [[this.endNode, null]];
+
+        while (this.queue.length) {
+            const index = Math.floor(Math.random() * this.queue.length);
+            const currentPath = this.queue[index]
+            this.queue.splice(index, 1);
+
+            const currentNode = currentPath[0];
+            const currentPathSegment = currentPath[1];            
+            
+            this.visited.add(currentNode);
+
+            const neighboringPaths = this.getNeighboringPaths(currentNode);
+            for (const pathSegment of neighboringPaths) {
+                if(!this.hasBeenVisited(pathSegment[0])) {
+                    for(let node of pathSegment) {
+                        if(node != undefined) {
+                            if (!this.isObstacle(node)) node.updateType("");
+                        }
+                    }
+                    this.queue.push(pathSegment);
+                    this.visited.add(pathSegment[0]);
+                }
+            }
+        }
+
+        for(let node of this.startNode.neighbors) {
+            if(!this.isObstacle(node)) {
+                node.updateType("")
+            }
+        }
     }
 }
