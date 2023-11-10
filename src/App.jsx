@@ -31,16 +31,23 @@ function DraggableNode({ node, onDragEnd }) {
 }
 
 // Droppable Node
-function DroppableNode({ node, onDrop, onClick  }) {
+function DroppableNode({ node, onDrop, onMouseDown, onMouseUp, onMouseEnter, onClick}) {
   const [, ref] = useDrop({
     accept: 'NODE',
     drop: () => ({ row: node.row, col: node.col }),
   });
 
   return (
-    <div ref={ref} className={`node ${node.isCheckpoint ? 'checkpoint' : node.type}`} onClick={onClick}>
-      {node.weight > 1 ? node.weight : ""}
-    </div>
+      <div
+          ref={ref}
+          className={`node ${node.isCheckpoint ? 'checkpoint' : node.type}`}
+          onMouseDown={() => onMouseDown(node.row, node.col)}
+          onMouseUp={onMouseUp}
+          onMouseEnter={() => onMouseEnter(node.row, node.col)}
+          onClick={onClick}
+      >
+        {node.weight > 1 ? node.weight : ""}
+      </div>
   );
 }
 
@@ -70,6 +77,25 @@ export default function App() {
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
   const [actionMode, setActionMode] = useState('');
   const [dragging, setDragging] = useState(false);
+
+  const handleMouseDown = (row, col) => {
+    if (selectedNodeOption === 'Add Walls') {
+      setAddingWalls(true);
+      handleDroppableNodeClick(row, col); // Place initial wall
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (selectedNodeOption === 'Add Walls') {
+      setAddingWalls(false);
+    }
+  };
+
+  const handleMouseEnter = (row, col) => {
+    if (addingWalls && selectedNodeOption === 'Add Walls') {
+      handleDroppableNodeClick(row, col);
+    }
+  };
 
   const handleSpeedChange = (e) => { // change speed with control slider
     setSpeed(200 - e.target.value);
@@ -352,32 +378,31 @@ export default function App() {
             </div>
           </header>
           <div className={`grid-container ${getCursorClassName()}`}>
-          {grid && grid.nodes.map((row, rowIndex) => (
-            <div key={rowIndex} className="row">
-            {row.map((node, nodeIndex) => {
-                // If it's a start or end node, return them wrapped in DraggableNode.
-                const draggable = [
-                  "start",
-                  "end"
-                ];
-                if (draggable.indexOf(node.type) >= 0) {
-                    return (
-                        <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
-                    );
-                } 
-                // For all other nodes, return them wrapped in DroppableNode.
-                else {
-                    return (
-                        <DroppableNode 
-                            key={nodeIndex} 
-                            node={node} 
-                            onClick={() => handleDroppableNodeClick(node.row, node.col)}
-                        />
-                    );
-                }
-            })}
-        </div>
-        ))}
+            {grid && grid.nodes.map((row, rowIndex) => (
+                <div key={rowIndex} className="row">
+                  {row.map((node, nodeIndex) => {
+                    // If it's a start or end node, return them wrapped in DraggableNode.
+                    if (node.type === 'start' || node.type === 'end') {
+                      return (
+                          <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
+                      );
+                    }
+                    // For all other nodes, return them wrapped in DroppableNode.
+                    else {
+                      return (
+                          <DroppableNode
+                              key={nodeIndex}
+                              node={node}
+                              onMouseDown={handleMouseDown}
+                              onMouseUp={handleMouseUp}
+                              onMouseEnter={handleMouseEnter}
+                              onClick={() => handleDroppableNodeClick(node.row, node.col)}
+                          />
+                      );
+                    }
+                  })}
+                </div>
+            ))}
           </div>
         </main>
       </DndProvider>
