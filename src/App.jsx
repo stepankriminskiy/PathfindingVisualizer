@@ -5,6 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useDrag, useDrop } from 'react-dnd';
 import { Grid } from './DataStructures';
 import { Algorithm } from './Algorithms';
+import { Maze } from './Mazes'
 
 const TOTAL_ROWS = 15;  // Adjust as needed
 const TOTAL_COLS = 30;
@@ -12,6 +13,7 @@ const TOTAL_COLS = 30;
 // visualization controls
 let paused = true;
 let alg = null;
+let maze = null;
 
 function DraggableNode({ node, onDragEnd }) {
   const [, ref] = useDrag({
@@ -73,7 +75,6 @@ export default function App() {
   const [speed, setSpeed] = useState(100); // for speed control slider
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
   const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*", "Weighted A*"];
-  const [selectedMaze, setSelectedMaze] = useState('Select Maze');
   const mazes = ["Random", "Maze"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
   const nodeOptions = ['Add Walls', 'Add Checkpoint', 'Increase Node Weight', 'Decrease Node Weight', 'Select Obstacle Remover', 'Remove ALL Walls', 'Reset All Weights'];
@@ -115,9 +116,8 @@ export default function App() {
     setSelectedAlgorithm(algorithm);
   };
 
-  const handleMazeChange = (maze) => {
-    handleClearWallsClick()
-    setSelectedMaze(maze);
+  const handleMazeClick = (maze) => {
+    RunMaze(maze)
   }
 
   const getCursorClassName = () => {
@@ -274,6 +274,13 @@ export default function App() {
     }
   };
 
+  const RunMaze = (maze_type) => {
+    maze = new Maze(grid, mazes);
+    
+    handleClearWallsClick();
+    maze.run(maze_type);
+  }
+
   const visualize = () => {
     if(!paused) {
         step();
@@ -351,8 +358,8 @@ export default function App() {
                   {mazes.map((maze, index) => (
                       <div
                           key={index}
-                          className={`DropdownItem ${selectedMaze === maze ? 'Selected' : ''}`}
-                          onClick={() => handleMazeChange(maze)}
+                          className={`DropdownItem`}
+                          onClick={() => handleMazeClick(maze)}
                       >
                         {maze}
                       </div>

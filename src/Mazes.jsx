@@ -88,7 +88,7 @@ export class Maze {
 
     // algs added here
     Random() {
-        for (const row of this.grid) {
+        for (let row of this.grid.nodes) {
             for (let node of row) {
                 if(!this.isObstacle(node)) {
                     if (Math.random() < 0.25) {
@@ -97,5 +97,9 @@ export class Maze {
                 }
             }
         }
+    }
+
+    Maze() {
+        
     }
 }
