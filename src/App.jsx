@@ -15,7 +15,7 @@ let paused = true;
 let alg = null;
 let maze = null;
 
-function DraggableNode({ node, onDragEnd }) {
+function DraggableNode({ node, onDragEnd, nodeStyles }) {
   const [, ref] = useDrag({
     type: 'NODE',
     item: { id: node.type, row: node.row, col: node.col },
@@ -26,18 +26,22 @@ function DraggableNode({ node, onDragEnd }) {
       }
     }
   });
+  const style = nodeStyles[node.type];
 
   return (
-      <div ref={ref} className={`node ${node.type}`}></div>
+      <div ref={ref} style={style} className={`node ${node.type}` }></div>
   );
 }
 
-// Droppable Node
-function DroppableNode({ node, onDrop, onMouseDown, onMouseUp, onMouseEnter, onClick}) {
+// Assuming nodeStyles is passed as a prop to DroppableNode
+function DroppableNode({ node, onDrop, onMouseDown, onMouseUp, onMouseEnter, onClick, nodeStyles }) {
   const [, ref] = useDrop({
     accept: 'NODE',
     drop: () => ({ row: node.row, col: node.col }),
   });
+
+  // Determine the style based on node type
+  const style = nodeStyles[node.type] || (node.isCheckpoint ? nodeStyles.checkpoint : null);
 
   return (
       <div
@@ -47,6 +51,7 @@ function DroppableNode({ node, onDrop, onMouseDown, onMouseUp, onMouseEnter, onC
           onMouseUp={onMouseUp}
           onMouseEnter={() => onMouseEnter(node.row, node.col)}
           onClick={onClick}
+          style={style} // Apply the style based on node type
       >
         {node.weight > 1 ? node.weight : ""}
       </div>
@@ -70,6 +75,7 @@ function clearGridKeepStartAndEnd(grid) {
 }
 
 export default function App() {
+  const [showCustomization, setShowCustomization] = useState(false);
   let [grid, setGrid] = useState(null);
   const timeoutRef = useRef(null); // for time outs
   const [speed, setSpeed] = useState(100); // for speed control slider
@@ -81,6 +87,28 @@ export default function App() {
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
   const [actionMode, setActionMode] = useState('');
   const [dragging, setDragging] = useState(false);
+  
+  const [nodeStyles, setNodeStyles] = useState({
+    start: { backgroundColor: '#90ee90' }, // Green
+    wall: { backgroundColor: '#000000' },  // Black
+    end: { backgroundColor: '#ff6347' },  // Red
+    checkpoint: { backgroundColor: '#ffd700' } // Gold
+  });
+
+  const [activeDropdown, setActiveDropdown] = useState('');
+
+  const handleColorChange = (nodeType, color) => {
+    setNodeStyles(prevStyles => ({
+      ...prevStyles,
+      [nodeType]: { backgroundColor: color }
+    }));
+    setGrid(grid => ({ ...grid }));
+  };
+
+    // Function to toggle the customization toolbar
+    const toggleCustomizationToolbar = () => {
+      setShowCustomization(prevShow => !prevShow);
+    };
 
   const handleMouseDown = (row, col) => {
     if (selectedNodeOption === 'Add Walls') {
@@ -208,6 +236,34 @@ export default function App() {
           break;
     }
     setGrid(newGrid);
+  }
+  function CustomizationToolbar({ nodeStyles, onColorChange, activeDropdown, setActiveDropdown }) {
+    const [tempColor, setTempColor] = useState(nodeStyles[activeDropdown]?.backgroundColor || '#ffffff');
+    const handleTempColorChange = (e) => {
+      setTempColor(e.target.value);
+    };
+  
+    const applyColorChange = () => {
+      onColorChange(activeDropdown, tempColor);
+    };
+    return (
+      <div className="customization-toolbar">
+        <button onClick={() => setActiveDropdown('start')}>Change Start Node Color</button>
+        <button onClick={() => setActiveDropdown('wall')}>Change Obstacle Wall Color</button>
+        <button onClick={() => setActiveDropdown('end')}>Change End Node Color</button>
+        <button onClick={() => setActiveDropdown('checkpoint')}>Change Checkpoint Color</button>
+        {activeDropdown && (
+        <>
+          <input 
+            type="color" 
+            value={tempColor}
+            onChange={handleTempColorChange} 
+          />
+          <button onClick={applyColorChange}>Apply Color</button>
+        </>
+      )}
+      </div>
+    );
   }
 
 
@@ -390,6 +446,25 @@ export default function App() {
             >
               Visualize!
             </div>
+            <div className="Dropdown">
+                  <div className="DropdownButton" onClick={toggleCustomizationToolbar}>
+                    Customize
+                  </div>
+                  {showCustomization && (
+                    <div className="DropdownContent">
+                         {showCustomization && (
+                          <CustomizationToolbar 
+                          nodeStyles={nodeStyles} 
+                          onColorChange={handleColorChange}
+                          activeDropdown={activeDropdown}
+                          setActiveDropdown={setActiveDropdown}
+                />
+                )}
+                    </div>
+                  )}
+                </div>          
+            
+         
             <div className="Button" onClick={handleClearClick}>Clear Board</div>
             <div className="Button">
               Control
@@ -407,37 +482,36 @@ export default function App() {
                 />
               </div>
             </div>
+
+      
           </header>
           <div className={`grid-container ${getCursorClassName()}`}>
-          {grid && grid.nodes.map((row, rowIndex) => (
-            <div key={rowIndex} className="row">
-            {row.map((node, nodeIndex) => {
-                // If it's a start or end node, return them wrapped in DraggableNode.
-                const draggable = [
-                  "start",
-                  "end"
-                ];
-                if (draggable.indexOf(node.type) >= 0) {
-                    return (
-                        <DraggableNode key={nodeIndex} node={node} onDragEnd={handleDragEnd} />
-                    );
-                } 
-                // For all other nodes, return them wrapped in DroppableNode.
-                else {
-                    return (
-                        <DroppableNode 
-                        key={nodeIndex}
-                        node={node}
-                        onMouseDown={handleMouseDown}
-                        onMouseUp={handleMouseUp}
-                        onMouseEnter={handleMouseEnter}
-                        onClick={() => handleDroppableNodeClick(node.row, node.col)}
-                        />
-                    );
-                }
-            })}
-        </div>
-        ))}
+            {grid && grid.nodes.map((row, rowIndex) => (
+                <div key={rowIndex} className="row">
+                  {row.map((node, nodeIndex) => {
+                    // If it's a start or end node, return them wrapped in DraggableNode.
+                    if (node.type === 'start' || node.type === 'end') {
+                      return (
+                          <DraggableNode nodeStyles={nodeStyles} key={nodeIndex} node={node}  onDragEnd={handleDragEnd} />
+                      );
+                    }
+                    // For all other nodes, return them wrapped in DroppableNode.
+                    else {
+                      return (
+                          <DroppableNode
+                              nodeStyles={nodeStyles} 
+                              key={nodeIndex}
+                              node={node}
+                              onMouseDown={handleMouseDown}
+                              onMouseUp={handleMouseUp}
+                              onMouseEnter={handleMouseEnter}
+                              onClick={() => handleDroppableNodeClick(node.row, node.col)}
+                          />
+                      );
+                    }
+                  })}
+                </div>
+            ))}
           </div>
         </main>
       </DndProvider>
