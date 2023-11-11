@@ -12,8 +12,8 @@ main {
 }
 
 .node {
-  width: 20px;
-  height: 20px;
+  width: 50px;
+  height: 50px;
   border: 1px solid black;
   background-color: white;
   transition: background-color 0.3s;
@@ -26,6 +26,46 @@ main {
 .node.visited {
   background-color: lightblue;
 }
+.node-visited-1 { background-color: rgb(235, 245, 255); }
+.node-visited-2 { background-color: rgb(230, 240, 250); }
+.node-visited-3 { background-color: rgb(225, 235, 245); }
+.node-visited-4 { background-color: rgb(220, 230, 240); }
+.node-visited-5 { background-color: rgb(215, 225, 235); }
+.node-visited-6 { background-color: rgb(210, 220, 230); }
+.node-visited-7 { background-color: rgb(205, 215, 225); }
+.node-visited-8 { background-color: rgb(200, 210, 220); }
+.node-visited-9 { background-color: rgb(195, 205, 215); }
+.node-visited-10 { background-color: rgb(190, 200, 210); }
+.node-visited-11 { background-color: rgb(185, 195, 205); }
+.node-visited-12 { background-color: rgb(180, 190, 200); }
+.node-visited-13 { background-color: rgb(175, 185, 195); }
+.node-visited-14 { background-color: rgb(170, 180, 190); }
+.node-visited-15 { background-color: rgb(165, 175, 185); }
+.node-visited-16 { background-color: rgb(160, 170, 180); }
+.node-visited-17 { background-color: rgb(155, 165, 175); }
+.node-visited-18 { background-color: rgb(150, 160, 170); }
+.node-visited-19 { background-color: rgb(145, 155, 165); }
+.node-visited-20 { background-color: rgb(140, 150, 160); }
+.node-visited-21 { background-color: rgb(135, 145, 155); }
+.node-visited-22 { background-color: rgb(130, 140, 150); }
+.node-visited-23 { background-color: rgb(125, 135, 145); }
+.node-visited-24 { background-color: rgb(120, 130, 140); }
+.node-visited-25 { background-color: rgb(115, 125, 135); }
+.node-visited-26 { background-color: rgb(110, 120, 130); }
+.node-visited-27 { background-color: rgb(105, 115, 125); }
+.node-visited-28 { background-color: rgb(100, 110, 120); }
+.node-visited-29 { background-color: rgb(95, 105, 115); }
+.node-visited-30 { background-color: rgb(90, 100, 110); }
+.node-visited-31 { background-color: rgb(85, 95, 105); }
+.node-visited-32 { background-color: rgb(80, 90, 100); }
+.node-visited-33 { background-color: rgb(75, 85, 95); }
+.node-visited-34 { background-color: rgb(70, 80, 90); }
+.node-visited-35 { background-color: rgb(65, 75, 85); }
+.node-visited-36 { background-color: rgb(60, 70, 80); }
+.node-visited-37 { background-color: rgb(55, 65, 75); }
+.node-visited-38 { background-color: rgb(50, 60, 70); }
+.node-visited-39 { background-color: rgb(45, 55, 65); }
+.node-visited-40 { background-color: rgb(40, 50, 60); }
 
 .node.path {
   background-color: blue;
@@ -40,7 +80,11 @@ main {
 }
 
 .node.wall {
-  background-color: gray;
+  background-color: rgb(139, 26, 92);
+}
+
+.node.checkpoint {
+  background-color: coral;
 }
 
 .toolbar {
@@ -172,4 +216,19 @@ main {
 .Selected {
   background-color: #007bff; /* Highlight the selected item */
   color: white;
+}
+.obstacle-adder-cursor {
+  cursor: crosshair;
+}
+.obstacle-remover-cursor {
+  cursor: not-allowed;
+}
+.checkpoint-cursor {
+  cursor: url('./png/checkpoint.png'), crosshair;
+}
+.minus-cursor {
+  cursor: zoom-out;
+}
+.plus-cursor {
+  cursor: zoom-in;
 }
