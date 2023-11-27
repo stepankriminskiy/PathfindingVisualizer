@@ -83,6 +83,7 @@ export default function App() {
   const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*", "Weighted A*"];
   const mazes = ["Random", "Maze"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
+  const visibilityOptions = ['Toggle Node Visibility', 'Toggle Wall Visibility', 'Toggle Obstacle Visibility'];
   const nodeOptions = ['Add Walls', 'Add Checkpoint', 'Increase Node Weight', 'Decrease Node Weight', 'Select Obstacle Remover', 'Remove ALL Walls', 'Reset All Weights'];
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
   const [actionMode, setActionMode] = useState('');
@@ -462,8 +463,24 @@ export default function App() {
                 )}
                     </div>
                   )}
-                </div>          
-            
+                </div>
+
+            <div className="Dropdown">
+              <div className="DropdownButton">
+                Toggle Visbility
+                <div className="DropdownContent">
+                  {visibilityOptions.map((visibilityOption, index) => (
+                      <div
+                          key={index}
+                          className={`DropdownItem ${selectedNodeOption === visibilityOption ? 'Selected' : ''}`}
+                          onClick={() => handleNodeOptionChange(visibilityOption)}
+                      >
+                        {visibilityOption}
+                      </div>
+                  ))}
+                </div>
+              </div>
+            </div>
          
             <div className="Button" onClick={handleClearClick}>Clear Board</div>
             <div className="Button">
