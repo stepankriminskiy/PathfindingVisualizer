@@ -212,10 +212,11 @@ export default function App() {
     const node = newGrid.nodes[row][col];
       // Check if the clicked node is 'start' or 'end'
 
+    const StartOrEnd = (node.type !== 'start' && node.type !== 'end')
 
     switch (actionMode) {
       case 'addWalls':
-          if (node.type !== 'start' && node.type !== 'end') {
+          if (StartOrEnd) {
             node.type = 'wall';
           }
           break;
@@ -225,22 +226,22 @@ export default function App() {
           }
           break;
       case 'clearNode':
-          if (node.type !== 'start' && node.type !== 'end') {
+          if (StartOrEnd) {
               node.type = '';
           }
           break;
       case 'increaseWeight':
-          if (node.type !== 'start' && node.type !== 'end') {
+          if (StartOrEnd) {
               node.weight += 1;
           }
           break;
       case 'decreaseWeight':
-          if (node.type !== 'start' && node.type !== 'end' && node.weight > 1) {
+          if (StartOrEnd && node.weight > 1) {
               node.weight -= 1;
           }
           break;
       case 'addCheckpoint':
-        if (node.type !== 'start' && node.type !== 'end') {
+        if (StartOrEnd && node.type !== 'wall') {
           node.setCheckpoint(true);
         }
       default:
