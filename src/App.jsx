@@ -15,6 +15,9 @@ let paused = true;
 let alg = null;
 let maze = null;
 
+let stats = [0, 0]
+let stats_names = ["Steps: ", "Path Length: "]
+
 function DraggableNode({ node, onDragEnd, nodeStyles }) {
   const [, ref] = useDrag({
     type: 'NODE',
@@ -266,11 +269,18 @@ export default function App() {
     );
   }
 
+  const reset_stats = () => {
+    for(let i = 0; i < stats_names.length; i++) {
+      stats[i] = 0;
+    }
+  }
 
   const handleClearClick = () => {
     grid = new Grid(TOTAL_ROWS, TOTAL_COLS);
-    alg = new Algorithm(grid, algorithms);
     setGrid(grid);
+    
+    alg = new Algorithm(grid, algorithms);
+    reset_stats()
 
     paused = true;
   };
@@ -320,13 +330,14 @@ export default function App() {
   const handleVisualizeClick = () => {
     // fixes a weird initialization issue with grid not having any nodes on start
     alg = new Algorithm(grid, algorithms);
+    reset_stats()
 
     clearGridKeepStartAndEnd(grid);
     alg.run(selectedAlgorithm);
 
     if(paused) {
       paused = false;
-      visualize(20);
+      visualize();
     }
   };
 
@@ -354,6 +365,9 @@ export default function App() {
       const visualNode = alg.visualQueue.shift();
       if(visualNode.type == "path") {
         removeVisitedNodes();
+        stats[1] ++;
+      } else {
+        stats[0] ++;
       }
 
       if(cantReplace.indexOf(visualNode.node.type) == -1) {
@@ -466,6 +480,21 @@ export default function App() {
             
          
             <div className="Button" onClick={handleClearClick}>Clear Board</div>
+            <div className="Dropdown">
+              <div className="DropdownButton">
+                Stats
+                <div className="DropdownContent">
+                  {stats_names.map((stat, index) => (
+                      <div
+                          key={index}
+                          className={`DropdownItem`}
+                      >
+                        {stat + stats[index]}
+                      </div>
+                  ))}
+                </div>
+              </div>
+            </div>
             <div className="Button">
               Control
               <div className="ControlButtons">

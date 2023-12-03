@@ -1,3 +1,4 @@
+import App from "./App";
 import { PriorityQueue, VisualNode, BetterMap, AStarNode } from "./DataStructures";
 
 export class Algorithm {
