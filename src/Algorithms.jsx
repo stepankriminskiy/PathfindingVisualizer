@@ -187,6 +187,7 @@ export class Algorithm {
     }
 
     noPath() {
+        this.calculateClassesForGradient();
         this.visualQueue.push(new VisualNode(null, "no_path"))
     }
 
