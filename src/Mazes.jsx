@@ -18,7 +18,8 @@ export class Maze {
             "path",
             "visited"
         ]
-        return not_obstacles.indexOf(node.type) == -1;
+        return not_obstacles.indexOf(node.type) == -1 &&
+        !node.type.startsWith("node-visited");
     }
 
     getNodes(type) {
