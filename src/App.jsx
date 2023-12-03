@@ -359,10 +359,17 @@ export default function App() {
     ];
     if(alg.visualQueue.length > 0) {
       const visualNode = alg.visualQueue.shift();
-      if(visualNode.type == "path") {
-        removeVisitedNodes();
+      switch(visualNode.type) {
+        case "path":
+          removeVisitedNodes();
+          break;
+        case "no_path":
+          alert("No path found for the current grid layout!")
+          return;
+        default:
+          break;
       }
-
+      
       if(cantReplace.indexOf(visualNode.node.type) == -1) {
         visualNode.node.updateType(visualNode.type);
       }
@@ -391,6 +398,12 @@ export default function App() {
   const handleStepButtonClick = () => {
     paused = true;
     step();
+  };
+
+  const handleNoPathButtonClick = () => {
+    // Handle the button click event here
+    // You can add the logic to display a message or perform any other action
+    console.log('No Path Found button clicked!');
   };
 
   return (
