@@ -4,7 +4,8 @@ export class Node {
     this.col = col;
     this.type = '';
     this.neighbors = []; // Neighbors of the node
-    this.weight = 1
+    this.weight = 1;
+    this.isCheckpoint = false;
 
     // Default type is an empty string
     // Other properties like isStart, isEnd, isVisited, etc.
@@ -37,6 +38,14 @@ export class Node {
   // Other methods for node operations, e.g., clearType, etc.
   clear() {
     this.updateType("");
+  }
+
+  setCheckpoint(bool) {
+    this.isCheckpoint = bool;
+  }
+
+  equalTo(node) {
+    return this.row == node.row && this.col == node.col;
   }
 }
 
@@ -81,8 +90,8 @@ export class Grid {
       }
     }
     
-    this.nodes[0][0].setAsStart(); // Top-left corner for start
-    this.nodes[rows - 1][columns - 1].setAsEnd(); // Bottom-right corner for end
+    this.nodes[7][1].setAsStart(); // Top-left corner for start
+    this.nodes[rows - 8][columns - 2].setAsEnd(); // Bottom-right corner for end
   }
   
   setNeighbors(node) {
@@ -140,16 +149,86 @@ export class Grid {
       }
     }
   }
+}
 
-  generateMaze() {
-    for (let i = 0; i < this.rows; i++) {
-      for (let j = 0; j < this.columns; j++) {
-        if (Math.random() > 0.75) {
-          this.nodes[i][j].type = 'wall'; 
-        }
-      }
-    }
+export class VisualNode {
+  constructor(node, type) {
+      this.node = node;
+      this.type = type;
+  }
+}
+
+export class PriorityQueue {
+  constructor() {
+      this.items = [];
   }
 
-  // Other methods for grid operations, e.g., updateNode, addObstacle, removeObstacle, setAsStart, setAsEnd, etc.
+  enqueue(item) {
+      const priority = item[1];
+      let added = false;
+
+      for (let i = 0; i < this.items.length; i++) {
+          if (priority < this.items[i][1]) {
+              this.items.splice(i, 0, item);
+              added = true;
+              break;
+          }
+      }
+
+      if (!added) {
+          this.items.push(item);
+      }
+  }
+
+  dequeue() {
+      if (this.isEmpty()) {
+          return null;
+      }
+      return this.items.shift()[0];
+  }
+
+  front() {
+      if (this.isEmpty()) {
+          return null;
+      }
+      return this.items[0][0];
+  }
+
+  isEmpty() {
+      return this.items.length === 0;
+  }
+
+  size() {
+      return this.items.length;
+  }
+}
+
+export class AStarNode {
+  constructor(node, f, g) {
+      this.node = node;
+      this.fcost = f;
+      this.gcost = g;
+  }
+
+  getCost() {
+      return this.fcost + this.gcost;
+  }
+}
+
+export class BetterMap {
+  constructor() {
+      this.map = new Map()
+  }
+
+  set(a, b) {
+      this.map.set(a, b)
+  }
+
+  getOrElse(a, b) {
+      const get = this.map.get(a);
+      if (get === undefined) {
+          return b;
+      }
+      return get;
+  }
 }
