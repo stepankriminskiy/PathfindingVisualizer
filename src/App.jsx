@@ -371,13 +371,20 @@ export default function App() {
     ];
     if(alg.visualQueue.length > 0) {
       const visualNode = alg.visualQueue.shift();
-      if(visualNode.type == "path") {
-        removeVisitedNodes();
-        stats[1] ++;
-      } else {
-        stats[0] ++;
-      }
 
+      switch(visualNode.type) {
+        case "path":
+          removeVisitedNodes();
+          stats[1] ++;
+          break;
+        case "no_path":
+          alert("No path found for the current grid layout!")
+          return;
+        default:
+          stats[0] ++;
+          break;
+      }
+      
       if(cantReplace.indexOf(visualNode.node.type) == -1) {
         visualNode.node.updateType(visualNode.type);
       }
