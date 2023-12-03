@@ -17,6 +17,7 @@ let maze = null;
 
 let stats = [0, 0]
 let stats_names = ["Steps: ", "Path Length: "]
+let selected_stat = 0;
 
 function DraggableNode({ node, onDragEnd, nodeStyles }) {
   const [, ref] = useDrag({
@@ -400,6 +401,10 @@ export default function App() {
     step();
   };
 
+  const handleStatsClick = (stat) => {
+    selected_stat = stats_names.indexOf(stat);
+  }
+
   return (
     
       <DndProvider backend={HTML5Backend}>
@@ -482,12 +487,13 @@ export default function App() {
             <div className="Button" onClick={handleClearClick}>Clear Board</div>
             <div className="Dropdown">
               <div className="DropdownButton">
-                Stats
+                {stats_names[selected_stat] + stats[selected_stat]}
                 <div className="DropdownContent">
                   {stats_names.map((stat, index) => (
                       <div
                           key={index}
                           className={`DropdownItem`}
+                          onClick={() => {handleStatsClick(stat)}}
                       >
                         {stat + stats[index]}
                       </div>
