@@ -76,7 +76,7 @@ export class Algorithm {
         let runs = this.getRuns([this.startNode, this.endNode], checkpointsInOrder);
 
         this.visualQueue = [];
-        while(runs.length) {
+        while (runs.length) {
             const currentRun = runs.shift();
             this.startNode = currentRun[0];
             this.endNode = currentRun[1];
@@ -99,7 +99,7 @@ export class Algorithm {
                 original[i]
             ]);
         }
-        
+
         return output;
     }
 
@@ -121,7 +121,7 @@ export class Algorithm {
                 break;
             case 4:
                 this.WeigtedAstar();
-                break;          
+                break;
         }
     }
 
@@ -131,17 +131,17 @@ export class Algorithm {
         let sorter = new PriorityQueue();
 
         let current = this.startNode;
-        while(checkpoints.length) {
-            for(const cp of checkpoints) {
+        while (checkpoints.length) {
+            for (const cp of checkpoints) {
                 sorter.enqueue([cp, this.nodeDistance(current, cp)]);
             }
 
             const closestNodeIndex = checkpoints.indexOf(sorter.dequeue());
             const closestNode = checkpoints[closestNodeIndex];
-            
+
             current = closestNode;
             sorted.push(closestNode);
-            
+
             checkpoints.splice(closestNodeIndex, 1);
             sorter = new PriorityQueue()
         }
@@ -164,21 +164,21 @@ export class Algorithm {
         let parents = new Map();
 
         let dequeue;
-        while(queue.length) {
+        while (queue.length) {
             dequeue = queue.shift();
             const currentNode = dequeue[0];
             const depth = dequeue[1]
 
-            if(this.isObstacle(currentNode)) continue;
+            if (this.isObstacle(currentNode)) continue;
 
             visited.add(currentNode);
 
-            if(currentNode.equalTo(node2)) break;
+            if (currentNode.equalTo(node2)) break;
 
             const neighbors = currentNode.neighbors;
-            for(const neighbor of neighbors) {
-                if(this.isObstacle(neighbor)) continue;
-                if(!visited.has(neighbor)) {
+            for (const neighbor of neighbors) {
+                if (this.isObstacle(neighbor)) continue;
+                if (!visited.has(neighbor)) {
                     queue.push([neighbor, depth + 1]);
                     visited.add(neighbor);
                 }
@@ -188,7 +188,25 @@ export class Algorithm {
     }
 
     noPath() {
-        console.log("no path.")
+        this.calculateClassesForGradient();
+        this.visualQueue.push(new VisualNode(null, "no_path"))
+    }
+
+    calculateClassesForGradient() {
+        let stepSize = Math.ceil(this.visualQueue.length / 40);
+        let currentStep = 0;
+        if (this.checkpoints == 0) {
+            for (let i = 0; i < this.visualQueue.length; i++) {
+                if (i % stepSize === 0 && currentStep < 40) {
+                    currentStep++;
+                }
+
+                let className = `node-visited-${currentStep}`;
+
+                this.visualQueue[i].type = className;
+
+            }
+        }
     }
 
     // algs added here
@@ -203,7 +221,7 @@ export class Algorithm {
             if (currentNode.equalTo(this.endNode)) {
                 this.calculateClassesForGradient();
                 this.buildPath(currentNode);
-                break;
+                return;
             }
 
             const neighbors = currentNode.neighbors;
@@ -219,23 +237,6 @@ export class Algorithm {
         };
         this.noPath();
     }
-        
-calculateClassesForGradient() {
-    let stepSize = Math.ceil(this.visualQueue.length / 40);
-    let currentStep = 0;
-  if(this.checkpoints == 0){
-    for (let i = 0; i < this.visualQueue.length; i++) {
-      if (i % stepSize === 0 && currentStep < 40) {
-        currentStep++;
-      }
-    
-    let className = `node-visited-${currentStep}`;
-      
-    this.visualQueue[i].type = className; 
-      
-    }
-}
-  }
 
     DFS() {
         while (this.queue.length) {
@@ -248,7 +249,7 @@ calculateClassesForGradient() {
             if (currentNode.equalTo(this.endNode)) {
                 this.calculateClassesForGradient();
                 this.buildPath(currentNode);
-                break;
+                return;
             }
 
             const neighbors = currentNode.neighbors;
@@ -263,7 +264,7 @@ calculateClassesForGradient() {
             }
         };
         this.noPath();
-      }
+    }
 
     Astar() {
         let pqueue = new PriorityQueue()
@@ -287,7 +288,7 @@ calculateClassesForGradient() {
             if (currentNode.equalTo(this.endNode)) {
                 this.calculateClassesForGradient();
                 this.buildPath(currentNode);
-                break;
+                return;
             }
 
             const neighbors = currentNode.neighbors
@@ -317,8 +318,8 @@ calculateClassesForGradient() {
         this.noPath()
     }
 
-      DijkstrasAlgorithm() {
-        
+    DijkstrasAlgorithm() {
+
         while (!this.priorityQueue.isEmpty()) {
             // Extract the node with the smallest distance from the priority queue.
             const currentNode = this.priorityQueue.dequeue();
@@ -333,7 +334,7 @@ calculateClassesForGradient() {
             if (currentNode.equalTo(this.endNode)) {
                 this.calculateClassesForGradient();
                 this.buildPath(currentNode);
-                break;
+                return;
             }
 
             // Visit neighbors and update distances if a shorter path is found.
@@ -341,8 +342,8 @@ calculateClassesForGradient() {
                 if (this.isObstacle(neighbor)) continue;
 
                 // Calculate the new distance from the source to the neighbor through the current node.
-                const newDistance = this.distances.get(currentNode) + neighbor.weight; 
-    
+                const newDistance = this.distances.get(currentNode) + neighbor.weight;
+
                 // If the new distance is shorter, update the distance and parent information.
                 if (!this.distances.has(neighbor) || newDistance < this.distances.get(neighbor)) {
                     this.distances.set(neighbor, newDistance);
@@ -353,7 +354,7 @@ calculateClassesForGradient() {
         }
         this.noPath();
     }
-    
+
     WeigtedAstar() {
         let pqueue = new PriorityQueue()
         let gcosts = new BetterMap()
@@ -376,7 +377,7 @@ calculateClassesForGradient() {
             if (currentNode.equalTo(this.endNode)) {
                 this.calculateClassesForGradient();
                 this.buildPath(currentNode);
-                break;
+                return;
             }
 
             const neighbors = currentNode.neighbors
