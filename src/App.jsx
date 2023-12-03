@@ -87,6 +87,9 @@ export default function App() {
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
   const [actionMode, setActionMode] = useState('');
   const [dragging, setDragging] = useState(false);
+  const [showGridSizeMenu, setShowGridSizeMenu] = useState(false);
+  const [rows, setRows] = useState(TOTAL_ROWS);
+  const [columns, setColumns] = useState(TOTAL_COLS);
   
   const [nodeStyles, setNodeStyles] = useState({
     start: { backgroundColor: '#90ee90' }, // Green
@@ -96,6 +99,10 @@ export default function App() {
   });
 
   const [activeDropdown, setActiveDropdown] = useState('');
+
+  const toggleGridSizeMenu = () => {
+    setShowGridSizeMenu(prevShow => !prevShow);
+  };
 
   const handleColorChange = (nodeType, color) => {
     setNodeStyles(prevStyles => ({
@@ -268,7 +275,7 @@ export default function App() {
 
 
   const handleClearClick = () => {
-    grid = new Grid(TOTAL_ROWS, TOTAL_COLS);
+    grid = new Grid(rows, columns);
     alg = new Algorithm(grid, algorithms);
     setGrid(grid);
 
@@ -297,9 +304,9 @@ export default function App() {
 };
 
   useEffect(() => {
-    const initialGrid = new Grid(TOTAL_ROWS, TOTAL_COLS);
+    const initialGrid = new Grid(rows, columns);
     setGrid(initialGrid);
-  }, []);
+  }, [rows, columns]);
 
   const handleDragEnd = (draggedItem, dropResult) => {
     // Logic to swap the start and end nodes
@@ -462,7 +469,36 @@ export default function App() {
                 )}
                     </div>
                   )}
-                </div>          
+                </div> 
+                <div className="Dropdown">
+                      <div className="DropdownButton" onClick={toggleGridSizeMenu}>
+                        Grid Size
+                      </div>
+                      {showGridSizeMenu && (
+                        <div className="DropdownContent">
+                          <div>
+                            <label>Rows: {rows}</label>
+                            <input
+                              type="range"
+                              min="5"
+                              max="20"
+                              value={rows}
+                              onChange={(e) => {setRows(Number(e.target.value)); handleClearClick();}}
+                            />
+                          </div>
+                          <div>
+                            <label>Columns: {columns}</label>
+                            <input
+                              type="range"
+                              min="5"
+                              max="35"
+                              value={columns}
+                              onChange={(e) => {setColumns(Number(e.target.value)); handleClearClick();}}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>    
             
          
             <div className="Button" onClick={handleClearClick}>Clear Board</div>
