@@ -348,14 +348,22 @@ export default function App() {
     const cantReplace = [
       "start",
       "end",
-      "path"
+      "path",
+      "no_path"
     ];
     if(alg.visualQueue.length > 0) {
       const visualNode = alg.visualQueue.shift();
-      if(visualNode.type == "path") {
-        removeVisitedNodes();
+      switch(visualNode.type) {
+        case "path":
+          removeVisitedNodes();
+          break;
+        case "no_path":
+          alert("No path found for the current grid layout!")
+          break;
+        default:
+          break;
       }
-
+      
       if(cantReplace.indexOf(visualNode.node.type) == -1) {
         visualNode.node.updateType(visualNode.type);
       }
