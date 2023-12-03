@@ -60,6 +60,8 @@ export class Algorithm {
     }
 
     buildPath(start) {
+        this.calculateClassesForGradient();
+
         let currentNode = start;
         let path = []
         while (currentNode !== undefined) {
@@ -219,7 +221,6 @@ export class Algorithm {
             this.visited.add(currentNode);
 
             if (currentNode.equalTo(this.endNode)) {
-                this.calculateClassesForGradient();
                 this.buildPath(currentNode);
                 return;
             }
@@ -247,7 +248,6 @@ export class Algorithm {
             this.visited.add(currentNode);
 
             if (currentNode.equalTo(this.endNode)) {
-                this.calculateClassesForGradient();
                 this.buildPath(currentNode);
                 return;
             }
@@ -286,7 +286,6 @@ export class Algorithm {
             this.visited.add(currentNode);
 
             if (currentNode.equalTo(this.endNode)) {
-                this.calculateClassesForGradient();
                 this.buildPath(currentNode);
                 return;
             }
@@ -332,7 +331,6 @@ export class Algorithm {
             this.visited.add(currentNode);
 
             if (currentNode.equalTo(this.endNode)) {
-                this.calculateClassesForGradient();
                 this.buildPath(currentNode);
                 return;
             }
@@ -375,7 +373,6 @@ export class Algorithm {
             this.visited.add(currentNode);
 
             if (currentNode.equalTo(this.endNode)) {
-                this.calculateClassesForGradient();
                 this.buildPath(currentNode);
                 return;
             }
