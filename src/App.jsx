@@ -83,12 +83,13 @@ export default function App() {
   const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*", "Weighted A*"];
   const mazes = ["Random", "Maze"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
-  const visibilityOptions = ['Toggle Node Visibility On', 'Toggle Node Visibility Off', 'Toggle Wall Visibility On', 'Toggle Wall Visibility Off', 'Toggle Obstacle Visibility On', 'Toggle Obstacle Visibility Off'];
+  const visibilityOptions = ['Toggle Node Visibility On', 'Toggle Node Visibility Off', 'Toggle Wall Visibility On', 'Toggle Wall Visibility Off', 'Toggle Checkpoint Visibility On', 'Toggle Checkpoint Visibility Off'];
   const nodeOptions = ['Add Walls', 'Add Checkpoint', 'Increase Node Weight', 'Decrease Node Weight', 'Select Obstacle Remover', 'Remove ALL Walls', 'Reset All Weights'];
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
   const [actionMode, setActionMode] = useState('');
   const [dragging, setDragging] = useState(false);
   const [currentWallColor, setCurrentWallColor] = useState('#000000'); // Default color is black
+  const [currentCheckpointColor, setCurrentCheckpointColor] = useState('#ffd700'); // Default color is Gold
 
 
   const [nodeStyles, setNodeStyles] = useState({
@@ -101,7 +102,14 @@ export default function App() {
   const [activeDropdown, setActiveDropdown] = useState('');
 
   const handleColorChange = (nodeType, color) => {
-    setCurrentWallColor(color); // Update currentWallColor state
+    if(nodeType === 'wall')
+    {
+      setCurrentWallColor(color); // Update currentWallColor state
+    }
+    if(nodeType === 'checkpoint')
+    {
+      setCurrentCheckpointColor(color);
+    }
     setNodeStyles(prevStyles => ({
       ...prevStyles,
       [nodeType]: { backgroundColor: color }
@@ -113,6 +121,13 @@ export default function App() {
     setNodeStyles(prevStyles => ({
       ...prevStyles,
       wall: { backgroundColor: color }
+    }));
+  };
+
+  const handleCheckpointVisibility = (color) => {
+    setNodeStyles(prevStyles => ({
+      ...prevStyles,
+      checkpoint: { backgroundColor: color }
     }));
   };
 
@@ -214,6 +229,12 @@ export default function App() {
         break;
       case 'Toggle Wall Visibility Off':
         handleWallVisibility('#ffffff');
+        break;
+      case 'Toggle Checkpoint Visibility On':
+        handleCheckpointVisibility(currentCheckpointColor);
+        break;
+      case 'Toggle Checkpoint Visibility Off':
+        handleCheckpointVisibility('#ffffff');
         break;
     }
   }
