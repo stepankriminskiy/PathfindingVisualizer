@@ -644,7 +644,7 @@ export default function App() {
               </div>
             </div>
             <div className="Button">
-              Control
+              Control:&nbsp;
               <div className="ControlButtons">
                 <button className="ControlButton" onClick={() => {handlePauseButtonClick();}}>Pause</button>
                 <button className="ControlButton" onClick={() => {handleContinueButtonClick();}}>Continue</button>
