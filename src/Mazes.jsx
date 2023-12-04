@@ -46,7 +46,10 @@ export class Maze {
                 this.Random();
                 break;
             case 1:
-                this.Maze();
+                this.Basic();
+                break;
+            case 2:
+                this.Weighted();
                 break;
         }
     }
@@ -144,7 +147,7 @@ export class Maze {
         }
     }
 
-    Maze() {
+    Basic() {
         this.setAllWall();
         this.queue = [[this.endNode, null]];
 
@@ -175,6 +178,16 @@ export class Maze {
         for(let node of this.startNode.neighbors) {
             if(!this.isObstacle(node)) {
                 node.updateType("")
+            }
+        }
+    }
+
+    Weighted() {
+        for (let row of this.grid.nodes) {
+            for (let node of row) {
+                if(!this.isObstacle(node)) {
+                    node.weight = Math.floor(20*Math.random())
+                }
             }
         }
     }
