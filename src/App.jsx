@@ -83,7 +83,7 @@ export default function App() {
   const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*", "Weighted A*"];
   const mazes = ["Random", "Maze"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
-  const visibilityOptions = ['Toggle Node Visibility', 'Toggle Wall Visibility', 'Toggle Obstacle Visibility'];
+  const visibilityOptions = ['Toggle Node Visibility On', 'Toggle Node Visibility Off', 'Toggle Wall Visibility On', 'Toggle Wall Visibility Off', 'Toggle Obstacle Visibility On', 'Toggle Obstacle Visibility Off'];
   const nodeOptions = ['Add Walls', 'Add Checkpoint', 'Increase Node Weight', 'Decrease Node Weight', 'Select Obstacle Remover', 'Remove ALL Walls', 'Reset All Weights'];
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
   const [actionMode, setActionMode] = useState('');
