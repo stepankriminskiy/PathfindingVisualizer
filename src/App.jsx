@@ -595,7 +595,6 @@ export default function App() {
               </div>
             </div>
 
-                </div> 
                 <div className="Dropdown">
                       <div className="DropdownButton" onClick={toggleGridSizeMenu}>
                         Grid Size
