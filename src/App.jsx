@@ -554,12 +554,6 @@ export default function App() {
               </div>
             </div>
             {/*<div className="Button">Add or Remove Walls</div>*/}
-            <div 
-              className="Button Blue" 
-              onClick={handleVisualizeClick}
-            >
-              Visualize!
-            </div>
             <div className="Dropdown">
                   <div className="DropdownButton" onClick={toggleCustomizationToolbar}>
                     Customize
@@ -593,6 +587,13 @@ export default function App() {
                   ))}
                 </div>
               </div>
+            </div>
+
+            <div
+                className="Button Blue"
+                onClick={handleVisualizeClick}
+            >
+              Visualize!
             </div>
 
                 <div className="Dropdown">
