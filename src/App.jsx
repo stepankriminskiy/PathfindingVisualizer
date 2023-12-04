@@ -88,7 +88,9 @@ export default function App() {
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
   const [actionMode, setActionMode] = useState('');
   const [dragging, setDragging] = useState(false);
-  
+  const [currentWallColor, setCurrentWallColor] = useState('#000000'); // Default color is black
+
+
   const [nodeStyles, setNodeStyles] = useState({
     start: { backgroundColor: '#90ee90' }, // Green
     wall: { backgroundColor: '#000000' },  // Black
@@ -99,11 +101,19 @@ export default function App() {
   const [activeDropdown, setActiveDropdown] = useState('');
 
   const handleColorChange = (nodeType, color) => {
+    setCurrentWallColor(color); // Update currentWallColor state
     setNodeStyles(prevStyles => ({
       ...prevStyles,
       [nodeType]: { backgroundColor: color }
     }));
     setGrid(grid => ({ ...grid }));
+  };
+
+  const handleWallVisibility = (color) => {
+    setNodeStyles(prevStyles => ({
+      ...prevStyles,
+      wall: { backgroundColor: color }
+    }));
   };
 
     // Function to toggle the customization toolbar
@@ -196,6 +206,17 @@ export default function App() {
         break;
     }
   };
+
+  function handleToggleVisibilityClick (buttonClicked) {
+    switch(buttonClicked) {
+      case 'Toggle Wall Visibility On':
+        handleWallVisibility(currentWallColor);
+        break;
+      case 'Toggle Wall Visibility Off':
+        handleWallVisibility('#ffffff');
+        break;
+    }
+  }
 
   function handleDroppableNodeClick(row, col) {
     const newGrid = { ...grid };
@@ -455,7 +476,7 @@ export default function App() {
                     <div className="DropdownContent">
                          {showCustomization && (
                           <CustomizationToolbar 
-                          nodeStyles={nodeStyles} 
+                          nodeStyles={nodeStyles}
                           onColorChange={handleColorChange}
                           activeDropdown={activeDropdown}
                           setActiveDropdown={setActiveDropdown}
@@ -473,7 +494,7 @@ export default function App() {
                       <div
                           key={index}
                           className={`DropdownItem ${selectedNodeOption === visibilityOption ? 'Selected' : ''}`}
-                          onClick={() => handleNodeOptionChange(visibilityOption)}
+                          onClick={() => handleToggleVisibilityClick(visibilityOption)}
                       >
                         {visibilityOption}
                       </div>
