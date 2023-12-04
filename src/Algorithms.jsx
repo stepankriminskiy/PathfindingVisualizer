@@ -12,9 +12,6 @@ export class Algorithm {
         this.priorityQueue = new PriorityQueue();
         this.priorityQueue.enqueue([this.startNode, 0]);
 
-        this.distances = new Map();
-        this.distances.set(this.startNode, 0);
-
         this.queue = this.getNodes("start");
         this.visited = new Set();
         this.parents = new Map();
@@ -116,7 +113,7 @@ export class Algorithm {
                 this.DFS();
                 break;
             case 2:
-                this.DijkstrasAlgorithm();
+                this.Dijkstras();
                 break;
             case 3:
                 this.Astar();
@@ -232,7 +229,6 @@ export class Algorithm {
                     this.queue.push(neighbor);
                     this.visited.add(neighbor);
                     this.parents.set(neighbor, currentNode);
-                    this.distances.set(neighbor, this.distances.get(currentNode) + 1);
                 }
             }
         };
@@ -259,7 +255,6 @@ export class Algorithm {
                     this.queue.push(neighbor);
                     this.visited.add(neighbor);
                     this.parents.set(neighbor, currentNode);
-                    this.distances.set(neighbor, this.distances.get(currentNode) + 1);
                 }
             }
         };
@@ -317,16 +312,23 @@ export class Algorithm {
         this.noPath()
     }
 
-    DijkstrasAlgorithm() {
+    Dijkstras() {
+        let pqueue = new PriorityQueue()
 
-        while (!this.priorityQueue.isEmpty()) {
-            // Extract the node with the smallest distance from the priority queue.
-            const currentNode = this.priorityQueue.dequeue();
+        while (this.queue.length) {
+            const node = this.queue.shift();
+            pqueue.enqueue([[node, 0], 0]);
+        }
 
-            // If this node has already been visited, skip it.
-            if (this.hasBeenVisited(currentNode)) continue;
+        while (pqueue.size()) {
+            const currentDjikstraNode = pqueue.dequeue();
+            const currentNode = currentDjikstraNode[0];
+            const distance = currentDjikstraNode[1];
 
-            // Mark the node as visited.
+            console.log(currentDjikstraNode, currentNode, distance)
+
+            if (this.isObstacle(currentNode)) continue;
+
             this.visualQueue.push(new VisualNode(currentNode, "visited"));
             this.visited.add(currentNode);
 
@@ -335,21 +337,17 @@ export class Algorithm {
                 return;
             }
 
-            // Visit neighbors and update distances if a shorter path is found.
-            for (const neighbor of currentNode.neighbors) {
+            const neighbors = currentNode.neighbors;
+            for (const neighbor of neighbors) {
                 if (this.isObstacle(neighbor)) continue;
-
-                // Calculate the new distance from the source to the neighbor through the current node.
-                const newDistance = this.distances.get(currentNode) + neighbor.weight;
-
-                // If the new distance is shorter, update the distance and parent information.
-                if (!this.distances.has(neighbor) || newDistance < this.distances.get(neighbor)) {
-                    this.distances.set(neighbor, newDistance);
+                if (!this.hasBeenVisited(neighbor)) {
+                    const d = distance + neighbor.weight;
+                    pqueue.enqueue([[neighbor, d], d]);
+                    this.visited.add(neighbor);
                     this.parents.set(neighbor, currentNode);
-                    this.priorityQueue.enqueue([neighbor, newDistance]);
                 }
             }
-        }
+        };
         this.noPath();
     }
 
