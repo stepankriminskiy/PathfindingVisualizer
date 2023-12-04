@@ -386,12 +386,6 @@ export default function App() {
     step();
   };
 
-  const handleNoPathButtonClick = () => {
-    // Handle the button click event here
-    // You can add the logic to display a message or perform any other action
-    console.log('No Path Found button clicked!');
-  };
-
   return (
     
       <DndProvider backend={HTML5Backend}>
@@ -473,7 +467,7 @@ export default function App() {
          
             <div className="Button" onClick={handleClearClick}>Clear Board</div>
             <div className="Button">
-              Control:&nbsp;
+              Control
               <div className="ControlButtons">
                 <button className="ControlButton" onClick={() => {handlePauseButtonClick();}}>Pause</button>
                 <button className="ControlButton" onClick={() => {handleContinueButtonClick();}}>Continue</button>
@@ -492,9 +486,6 @@ export default function App() {
       
           </header>
           <div className={`grid-container ${getCursorClassName()}`}>
-            <div className="Button NoPathButton" onClick={handleNoPathButtonClick}>
-              No Path Found!
-            </div>
             {grid && grid.nodes.map((row, rowIndex) => (
                 <div key={rowIndex} className="row">
                   {row.map((node, nodeIndex) => {
