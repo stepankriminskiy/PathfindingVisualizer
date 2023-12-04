@@ -87,10 +87,16 @@ export default function App() {
   const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*", "Weighted A*"];
   const mazes = ["Random", "Maze"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
+  const visibilityOptions = ['Toggle Node Visibility On', 'Toggle Node Visibility Off', 'Toggle Wall Visibility On', 'Toggle Wall Visibility Off', 'Toggle Checkpoint Visibility On', 'Toggle Checkpoint Visibility Off'];
   const nodeOptions = ['Add Walls', 'Add Checkpoint', 'Increase Node Weight', 'Decrease Node Weight', 'Select Obstacle Remover', 'Remove ALL Walls', 'Reset All Weights'];
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
   const [actionMode, setActionMode] = useState('');
   const [dragging, setDragging] = useState(false);
+  const [currentWallColor, setCurrentWallColor] = useState('#000000'); // Default color is black
+  const [currentCheckpointColor, setCurrentCheckpointColor] = useState('#ffd700'); // Default color is Gold
+  const [currentStartColor, setCurrentStartColor] = useState('#90ee90'); // Default color is Green
+  const [currentEndColor, setCurrentEndColor] = useState('#ff6347');
+
   const [showGridSizeMenu, setShowGridSizeMenu] = useState(false);
   const [rows, setRows] = useState(TOTAL_ROWS);
   const [columns, setColumns] = useState(TOTAL_COLS);
@@ -109,12 +115,57 @@ export default function App() {
   };
 
   const handleColorChange = (nodeType, color) => {
+    if(nodeType === 'wall')
+    {
+      setCurrentWallColor(color); // Update currentWallColor state
+    }
+    if(nodeType === 'checkpoint')
+    {
+      setCurrentCheckpointColor(color);
+    }
+    if(nodeType === 'start')
+    {
+      setCurrentStartColor(color);
+    }
+    if(nodeType === 'end')
+    {
+      setCurrentEndColor(color);
+    }
     setNodeStyles(prevStyles => ({
       ...prevStyles,
       [nodeType]: { backgroundColor: color }
     }));
     setGrid(grid => ({ ...grid }));
   };
+
+  const handleWallVisibility = (color) => {
+    setNodeStyles(prevStyles => ({
+      ...prevStyles,
+      wall: { backgroundColor: color }
+    }));
+  };
+
+  const handleCheckpointVisibility = (color) => {
+    setNodeStyles(prevStyles => ({
+      ...prevStyles,
+      checkpoint: { backgroundColor: color }
+    }));
+  };
+
+  const handleStartVisibility = (color) => {
+    setNodeStyles(prevStyles => ({
+      ...prevStyles,
+      start: { backgroundColor: color }
+    }));
+  };
+
+  const handleEndVisibility = (color) => {
+    setNodeStyles(prevStyles => ({
+      ...prevStyles,
+      end: { backgroundColor: color }
+    }));
+  };
+
 
     // Function to toggle the customization toolbar
     const toggleCustomizationToolbar = () => {
@@ -206,6 +257,35 @@ export default function App() {
         break;
     }
   };
+
+  function handleToggleVisibilityClick (buttonClicked) {
+    switch(buttonClicked) {
+      case 'Toggle Wall Visibility On':
+        handleWallVisibility(currentWallColor);
+        break;
+      case 'Toggle Wall Visibility Off':
+        handleWallVisibility('#ffffff');
+        break;
+      case 'Toggle Checkpoint Visibility On':
+        handleCheckpointVisibility(currentCheckpointColor);
+        break;
+      case 'Toggle Checkpoint Visibility Off':
+        handleCheckpointVisibility('#ffffff');
+        break;
+      case 'Toggle Node Visibility On':
+        handleWallVisibility(currentWallColor);
+        handleCheckpointVisibility(currentCheckpointColor);
+        handleStartVisibility(currentStartColor);
+        handleEndVisibility(currentEndColor);
+        break;
+      case 'Toggle Node Visibility Off':
+        handleWallVisibility('#ffffff');
+        handleCheckpointVisibility('#ffffff');
+        handleStartVisibility('#ffffff');
+        handleEndVisibility('#ffffff');
+        break;
+    }
+  }
 
   function handleDroppableNodeClick(row, col) {
     const newGrid = { ...grid };
@@ -488,7 +568,7 @@ export default function App() {
                     <div className="DropdownContent">
                          {showCustomization && (
                           <CustomizationToolbar 
-                          nodeStyles={nodeStyles} 
+                          nodeStyles={nodeStyles}
                           onColorChange={handleColorChange}
                           activeDropdown={activeDropdown}
                           setActiveDropdown={setActiveDropdown}
@@ -496,7 +576,25 @@ export default function App() {
                 )}
                     </div>
                   )}
-                </div> 
+                </div>
+
+            <div className="Dropdown">
+              <div className="DropdownButton">
+                Toggle Visbility
+                <div className="DropdownContent">
+                  {visibilityOptions.map((visibilityOption, index) => (
+                      <div
+                          key={index}
+                          className={`DropdownItem ${selectedNodeOption === visibilityOption ? 'Selected' : ''}`}
+                          onClick={() => handleToggleVisibilityClick(visibilityOption)}
+                      >
+                        {visibilityOption}
+                      </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
                 <div className="Dropdown">
                       <div className="DropdownButton" onClick={toggleGridSizeMenu}>
                         Grid Size
@@ -526,7 +624,7 @@ export default function App() {
                         </div>
                       )}
                     </div>    
-            
+ 
          
             <div className="Button" onClick={handleClearClick}>Clear Board</div>
             <div className="Dropdown">
