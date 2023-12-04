@@ -90,6 +90,8 @@ export default function App() {
   const [dragging, setDragging] = useState(false);
   const [currentWallColor, setCurrentWallColor] = useState('#000000'); // Default color is black
   const [currentCheckpointColor, setCurrentCheckpointColor] = useState('#ffd700'); // Default color is Gold
+  const [currentStartColor, setCurrentStartColor] = useState('#90ee90'); // Default color is Green
+  const [currentEndColor, setCurrentEndColor] = useState('#ff6347');
 
 
   const [nodeStyles, setNodeStyles] = useState({
@@ -109,6 +111,14 @@ export default function App() {
     if(nodeType === 'checkpoint')
     {
       setCurrentCheckpointColor(color);
+    }
+    if(nodeType === 'start')
+    {
+      setCurrentStartColor(color);
+    }
+    if(nodeType === 'end')
+    {
+      setCurrentEndColor(color);
     }
     setNodeStyles(prevStyles => ({
       ...prevStyles,
@@ -130,6 +140,21 @@ export default function App() {
       checkpoint: { backgroundColor: color }
     }));
   };
+
+  const handleStartVisibility = (color) => {
+    setNodeStyles(prevStyles => ({
+      ...prevStyles,
+      start: { backgroundColor: color }
+    }));
+  };
+
+  const handleEndVisibility = (color) => {
+    setNodeStyles(prevStyles => ({
+      ...prevStyles,
+      end: { backgroundColor: color }
+    }));
+  };
+
 
     // Function to toggle the customization toolbar
     const toggleCustomizationToolbar = () => {
@@ -235,6 +260,18 @@ export default function App() {
         break;
       case 'Toggle Checkpoint Visibility Off':
         handleCheckpointVisibility('#ffffff');
+        break;
+      case 'Toggle Node Visibility On':
+        handleWallVisibility(currentWallColor);
+        handleCheckpointVisibility(currentCheckpointColor);
+        handleStartVisibility(currentStartColor);
+        handleEndVisibility(currentEndColor);
+        break;
+      case 'Toggle Node Visibility Off':
+        handleWallVisibility('#ffffff');
+        handleCheckpointVisibility('#ffffff');
+        handleStartVisibility('#ffffff');
+        handleEndVisibility('#ffffff');
         break;
     }
   }
