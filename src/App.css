@@ -17,6 +17,7 @@ main {
   border: 1px solid black;
   background-color: white;
   transition: background-color 0.3s;
+  visibility: visible;
 }
 
 .node.start {
@@ -69,22 +70,27 @@ main {
 
 .node.path {
   background-color: blue;
+  visibility: visible;
 }
 
 .node.end {
   background-color: red;
+  visibility: visible;
 }
 
 .node.obstacle {
   background-color: gray;
+  visibility: visible;
 }
 
 .node.wall {
   background-color: rgb(139, 26, 92);
+  visibility: visible;
 }
 
 .node.checkpoint {
   background-color: coral;
+  visibility: visible;
 }
 
 .toolbar {
@@ -99,6 +105,12 @@ main {
   padding: 10px;
   color: white;
 
+}
+@media screen and (orientation: landscape) {
+  .toolbar {
+    width: 100vw; /* Use 100% of the viewport width */
+    /* Other adjustments for landscape mode */
+  }
 }
 
 .Menu {
@@ -231,4 +243,16 @@ main {
 }
 .plus-cursor {
   cursor: zoom-in;
+}
+
+.NoPathButton {
+  background-color: red;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+.NoPathButton:hover {
+  background-color: red;
 }

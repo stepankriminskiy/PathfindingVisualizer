@@ -15,6 +15,10 @@ let paused = true;
 let alg = null;
 let maze = null;
 
+let stats = [0, 0]
+let stats_names = ["Steps: ", "Path Length: "]
+let selected_stat = 0;
+
 function DraggableNode({ node, onDragEnd, nodeStyles }) {
   const [, ref] = useDrag({
     type: 'NODE',
@@ -81,12 +85,21 @@ export default function App() {
   const [speed, setSpeed] = useState(100); // for speed control slider
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('Select Algorithm');
   const algorithms = ['Breadth-First Search', 'Depth-First Search', "Dijkstra's Algorithm", "Basic A*", "Weighted A*"];
-  const mazes = ["Random", "Maze"];
+  const mazes = ["Random", "Basic", "Weighted"];
   const [selectedNodeOption, setSelectedNodeOption] = useState('Select Node Option');
+  const visibilityOptions = ['Toggle Node Visibility On', 'Toggle Node Visibility Off', 'Toggle Wall Visibility On', 'Toggle Wall Visibility Off', 'Toggle Checkpoint Visibility On', 'Toggle Checkpoint Visibility Off'];
   const nodeOptions = ['Add Walls', 'Add Checkpoint', 'Increase Node Weight', 'Decrease Node Weight', 'Select Obstacle Remover', 'Remove ALL Walls', 'Reset All Weights'];
   const [addingWalls, setAddingWalls] = useState(false); // Step 1
   const [actionMode, setActionMode] = useState('');
   const [dragging, setDragging] = useState(false);
+  const [currentWallColor, setCurrentWallColor] = useState('#000000'); // Default color is black
+  const [currentCheckpointColor, setCurrentCheckpointColor] = useState('#ffd700'); // Default color is Gold
+  const [currentStartColor, setCurrentStartColor] = useState('#90ee90'); // Default color is Green
+  const [currentEndColor, setCurrentEndColor] = useState('#ff6347');
+
+  const [showGridSizeMenu, setShowGridSizeMenu] = useState(false);
+  const [rows, setRows] = useState(TOTAL_ROWS);
+  const [columns, setColumns] = useState(TOTAL_COLS);
   
   const [nodeStyles, setNodeStyles] = useState({
     start: { backgroundColor: '#90ee90' }, // Green
@@ -97,13 +110,62 @@ export default function App() {
 
   const [activeDropdown, setActiveDropdown] = useState('');
 
+  const toggleGridSizeMenu = () => {
+    setShowGridSizeMenu(prevShow => !prevShow);
+  };
+
   const handleColorChange = (nodeType, color) => {
+    if(nodeType === 'wall')
+    {
+      setCurrentWallColor(color); // Update currentWallColor state
+    }
+    if(nodeType === 'checkpoint')
+    {
+      setCurrentCheckpointColor(color);
+    }
+    if(nodeType === 'start')
+    {
+      setCurrentStartColor(color);
+    }
+    if(nodeType === 'end')
+    {
+      setCurrentEndColor(color);
+    }
     setNodeStyles(prevStyles => ({
       ...prevStyles,
       [nodeType]: { backgroundColor: color }
     }));
     setGrid(grid => ({ ...grid }));
   };
+
+  const handleWallVisibility = (color) => {
+    setNodeStyles(prevStyles => ({
+      ...prevStyles,
+      wall: { backgroundColor: color }
+    }));
+  };
+
+  const handleCheckpointVisibility = (color) => {
+    setNodeStyles(prevStyles => ({
+      ...prevStyles,
+      checkpoint: { backgroundColor: color }
+    }));
+  };
+
+  const handleStartVisibility = (color) => {
+    setNodeStyles(prevStyles => ({
+      ...prevStyles,
+      start: { backgroundColor: color }
+    }));
+  };
+
+  const handleEndVisibility = (color) => {
+    setNodeStyles(prevStyles => ({
+      ...prevStyles,
+      end: { backgroundColor: color }
+    }));
+  };
+
 
     // Function to toggle the customization toolbar
     const toggleCustomizationToolbar = () => {
@@ -196,15 +258,45 @@ export default function App() {
     }
   };
 
+  function handleToggleVisibilityClick (buttonClicked) {
+    switch(buttonClicked) {
+      case 'Toggle Wall Visibility On':
+        handleWallVisibility(currentWallColor);
+        break;
+      case 'Toggle Wall Visibility Off':
+        handleWallVisibility('#ffffff');
+        break;
+      case 'Toggle Checkpoint Visibility On':
+        handleCheckpointVisibility(currentCheckpointColor);
+        break;
+      case 'Toggle Checkpoint Visibility Off':
+        handleCheckpointVisibility('#ffffff');
+        break;
+      case 'Toggle Node Visibility On':
+        handleWallVisibility(currentWallColor);
+        handleCheckpointVisibility(currentCheckpointColor);
+        handleStartVisibility(currentStartColor);
+        handleEndVisibility(currentEndColor);
+        break;
+      case 'Toggle Node Visibility Off':
+        handleWallVisibility('#ffffff');
+        handleCheckpointVisibility('#ffffff');
+        handleStartVisibility('#ffffff');
+        handleEndVisibility('#ffffff');
+        break;
+    }
+  }
+
   function handleDroppableNodeClick(row, col) {
     const newGrid = { ...grid };
     const node = newGrid.nodes[row][col];
       // Check if the clicked node is 'start' or 'end'
 
+    const StartOrEnd = (node.type !== 'start' && node.type !== 'end')
 
     switch (actionMode) {
       case 'addWalls':
-          if (node.type !== 'start' && node.type !== 'end') {
+          if (StartOrEnd) {
             node.type = 'wall';
           }
           break;
@@ -214,22 +306,22 @@ export default function App() {
           }
           break;
       case 'clearNode':
-          if (node.type !== 'start' && node.type !== 'end') {
+          if (StartOrEnd) {
               node.type = '';
           }
           break;
       case 'increaseWeight':
-          if (node.type !== 'start' && node.type !== 'end') {
+          if (StartOrEnd) {
               node.weight += 1;
           }
           break;
       case 'decreaseWeight':
-          if (node.type !== 'start' && node.type !== 'end' && node.weight > 1) {
+          if (StartOrEnd && node.weight > 1) {
               node.weight -= 1;
           }
           break;
       case 'addCheckpoint':
-        if (node.type !== 'start' && node.type !== 'end') {
+        if (StartOrEnd && node.type !== 'wall') {
           node.setCheckpoint(true);
         }
       default:
@@ -266,11 +358,18 @@ export default function App() {
     );
   }
 
+  const reset_stats = () => {
+    for(let i = 0; i < stats_names.length; i++) {
+      stats[i] = 0;
+    }
+  }
 
   const handleClearClick = () => {
-    grid = new Grid(TOTAL_ROWS, TOTAL_COLS);
-    alg = new Algorithm(grid, algorithms);
+    grid = new Grid(rows, columns);
     setGrid(grid);
+    
+    alg = new Algorithm(grid, algorithms);
+    reset_stats()
 
     paused = true;
   };
@@ -297,9 +396,9 @@ export default function App() {
 };
 
   useEffect(() => {
-    const initialGrid = new Grid(TOTAL_ROWS, TOTAL_COLS);
+    const initialGrid = new Grid(rows, columns);
     setGrid(initialGrid);
-  }, []);
+  }, [rows, columns]);
 
   const handleDragEnd = (draggedItem, dropResult) => {
     // Logic to swap the start and end nodes
@@ -320,13 +419,14 @@ export default function App() {
   const handleVisualizeClick = () => {
     // fixes a weird initialization issue with grid not having any nodes on start
     alg = new Algorithm(grid, algorithms);
+    reset_stats()
 
     clearGridKeepStartAndEnd(grid);
     alg.run(selectedAlgorithm);
 
     if(paused) {
       paused = false;
-      visualize(20);
+      visualize();
     }
   };
 
@@ -352,10 +452,20 @@ export default function App() {
     ];
     if(alg.visualQueue.length > 0) {
       const visualNode = alg.visualQueue.shift();
-      if(visualNode.type == "path") {
-        removeVisitedNodes();
-      }
 
+      switch(visualNode.type) {
+        case "path":
+          removeVisitedNodes();
+          stats[1] ++;
+          break;
+        case "no_path":
+          alert("No path found for the current grid layout!")
+          return;
+        default:
+          stats[0] ++;
+          break;
+      }
+      
       if(cantReplace.indexOf(visualNode.node.type) == -1) {
         visualNode.node.updateType(visualNode.type);
       }
@@ -385,6 +495,10 @@ export default function App() {
     paused = true;
     step();
   };
+
+  const handleStatsClick = (stat) => {
+    selected_stat = stats_names.indexOf(stat);
+  }
 
   return (
     
@@ -440,12 +554,6 @@ export default function App() {
               </div>
             </div>
             {/*<div className="Button">Add or Remove Walls</div>*/}
-            <div 
-              className="Button Blue" 
-              onClick={handleVisualizeClick}
-            >
-              Visualize!
-            </div>
             <div className="Dropdown">
                   <div className="DropdownButton" onClick={toggleCustomizationToolbar}>
                     Customize
@@ -454,7 +562,7 @@ export default function App() {
                     <div className="DropdownContent">
                          {showCustomization && (
                           <CustomizationToolbar 
-                          nodeStyles={nodeStyles} 
+                          nodeStyles={nodeStyles}
                           onColorChange={handleColorChange}
                           activeDropdown={activeDropdown}
                           setActiveDropdown={setActiveDropdown}
@@ -462,12 +570,82 @@ export default function App() {
                 )}
                     </div>
                   )}
-                </div>          
-            
+                </div>
+
+            <div className="Dropdown">
+              <div className="DropdownButton">
+                Toggle Visbility
+                <div className="DropdownContent">
+                  {visibilityOptions.map((visibilityOption, index) => (
+                      <div
+                          key={index}
+                          className={`DropdownItem ${selectedNodeOption === visibilityOption ? 'Selected' : ''}`}
+                          onClick={() => handleToggleVisibilityClick(visibilityOption)}
+                      >
+                        {visibilityOption}
+                      </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div
+                className="Button Blue"
+                onClick={handleVisualizeClick}
+            >
+              Visualize!
+            </div>
+
+                <div className="Dropdown">
+                      <div className="DropdownButton" onClick={toggleGridSizeMenu}>
+                        Grid Size
+                      </div>
+                      {showGridSizeMenu && (
+                        <div className="DropdownContent">
+                          <div>
+                            <label>Rows: {rows}</label>
+                            <input
+                              type="range"
+                              min="5"
+                              max="20"
+                              value={rows}
+                              onChange={(e) => {setRows(Number(e.target.value)); handleClearClick();}}
+                            />
+                          </div>
+                          <div>
+                            <label>Columns: {columns}</label>
+                            <input
+                              type="range"
+                              min="5"
+                              max="35"
+                              value={columns}
+                              onChange={(e) => {setColumns(Number(e.target.value)); handleClearClick();}}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>    
+ 
          
             <div className="Button" onClick={handleClearClick}>Clear Board</div>
+            <div className="Dropdown">
+              <div className="DropdownButton">
+                {stats_names[selected_stat] + stats[selected_stat]}
+                <div className="DropdownContent">
+                  {stats_names.map((stat, index) => (
+                      <div
+                          key={index}
+                          className={`DropdownItem`}
+                          onClick={() => {handleStatsClick(stat)}}
+                      >
+                        {stat + stats[index]}
+                      </div>
+                  ))}
+                </div>
+              </div>
+            </div>
             <div className="Button">
-              Control
+              Control:&nbsp;
               <div className="ControlButtons">
                 <button className="ControlButton" onClick={() => {handlePauseButtonClick();}}>Pause</button>
                 <button className="ControlButton" onClick={() => {handleContinueButtonClick();}}>Continue</button>
