@@ -1,70 +1,32 @@
-# Getting Started with Create React App
+# Pathfinding Algorithm Visualizer
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
+The Pathfinding Algorithm Visualizer is a web-based tool that allows users to interactively explore and visualize various pathfinding algorithms. It is designed to help users understand how these algorithms work and make informed decisions when choosing the right algorithm for specific scenarios.
 
-## Available Scripts
+## Link to Project
+https://pathfindervisualizing.netlify.app/
 
-In the project directory, you can run:
+### Features
+Multiple Algorithms: The visualizer supports a variety of pathfinding algorithms, including A* (A Star), Dijkstra's algorithm, Breadth-First Search, Depth-First Search, and more. Users can choose the algorithm that best suits their needs.
 
-### `npm start`
+Maze Generation: Users can generate custom mazes with walls or weighted nodes, or even a combination of both. This feature allows for simulating real-world scenarios where paths may be obstructed or have varying degrees of cost.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Interactive Grid: Easily add walls, weighted nodes, and checkpoints to the grid. The visualizer provides an intuitive interface to modify the terrain and customize the pathfinding environment.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Depth-Based Visualization: As the algorithm explores the grid, the visualization dynamically changes colors to indicate the depth of exploration. This feature helps users track the progress of the algorithm in real-time.
 
-### `npm test`
+Statistics Tracking: The visualizer keeps track of essential statistics such as the number of steps taken and the length of the path found. This information helps users evaluate the efficiency of different algorithms.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Customization: Users can customize the grid size and the appearance of nodes, including checkpoints, start and end nodes, and walls. Tailor the visualizer to match your specific requirements and preferences.
 
-### `npm run build`
+Control and Speed: The tool offers control options such as pause, start, continue, or step-by-step execution. Additionally, a speed slider allows users to adjust the visualization speed to match their preferred pace.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# Getting Started
+1. Visit the Pathfinding Algorithm Visualizer website.
+2. Choose a pathfinding algorithm from the available options.
+3. Customize the grid by adding walls, weighted nodes, and checkpoints.
+4. Configure grid size and node colors to your liking.
+5. Start the visualization and observe the algorithm's progress.
+6. Use the control options to pause, continue, or step through the visualization at your own pace.
+7. Monitor statistics to analyze algorithm performance.
+8. Explore and experiment with different scenarios to gain insights into the behavior of various pathfinding algorithms and make informed decisions for your specific applications.
